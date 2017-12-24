@@ -12,6 +12,9 @@ all: $(TARGET)
 $(TARGET): $(JSMNLIB)
 	$(CC) $(CFLAGS) $(SRC) -o $@ $(LDFLAGS)
 
+debug: $(JSMNLIB)
+	$(CC) $(CFLAGS) -g $(SRC) -o $@ $(LDFLAGS)
+
 $(JSMNLIB): libjsmn
 	@# do nothing
 
@@ -21,4 +24,5 @@ libjsmn:
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: getcoin clean
+.PHONY: all debug getcoin clean
+
