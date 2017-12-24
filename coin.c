@@ -1,22 +1,29 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <curl/curl.h>
 #include "jsmn/jsmn.h"
 
 #define TKN_SIZE 256
 static jsmn_parser parser;
 
+typedef struct {
+    char* data;
+    size_t size;
+} result_t;
 
-static size_t get_callback(void* content, size_t size, size_t nmemb, void* userdata) {
+static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
     const size_t realSize = size * nmemb;
-    char* data = (char*)content;
-    data[realSize - 1] = 0;
-
-    jsmntok_t tokens[TKN_SIZE];
-    const int actual = jsmn_parse(&parser, data, realSize, tokens, TKN_SIZE);
-    if (actual < 0) {
-        fprintf(stderr, "failed to parse json with error code %d\n", actual);
+    result_t* res = (result_t*) userdata;
+    res->data = realloc(res->data, res->size + realSize + 1);
+    if (!res->data) {
+        fprintf(stderr, "out of memory!\n");
+        return 0;
     }
 
+    memcpy(&(res->data[res->size]), contents, realSize);
+    res->size += realSize;
+    res->data[res->size] = 0;
 
     return realSize;
 }
@@ -28,19 +35,23 @@ int main(int argc, char* argv[]) {
 
     CURL* curl = curl_easy_init();
     if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, "https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=EUR");
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+        result_t res;
+        res.data = malloc(1);
+        res.size = 0;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.coinmarketcap.com/v1/ticker/?limit=20");
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&res);
 
-        CURLcode res = curl_easy_perform(curl);
+        CURLcode err = curl_easy_perform(curl);
 
-        if(res != CURLE_OK) {
-            fprintf(stderr, "nope : %s\n", curl_easy_strerror(res));
+        if(err != CURLE_OK) {
+            fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
+        } else {
+            printf("%s\n", res.data);
         }
-
-        int status = 0;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
-        printf("status code: %d\n", status);
 
         curl_easy_cleanup(curl);
     }
