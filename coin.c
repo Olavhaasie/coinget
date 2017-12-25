@@ -40,6 +40,7 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
 }
 
 int main(int argc, char* argv[]) {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 
     result_t res;
     const char* url = "https://api.coinmarketcap.com/v1/ticker/?limit=10&convert=EUR";
@@ -54,14 +55,14 @@ int main(int argc, char* argv[]) {
         return err;
     }
 
+    curl_global_cleanup();
     free(res.data);
     return 0;
 }
 
 int get_coins(const char* url, result_t* res) {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
     CURL* curl = curl_easy_init();
+
     if(curl) {
         res->data = malloc(1);
         res->size = 0;
@@ -85,8 +86,6 @@ int get_coins(const char* url, result_t* res) {
         return -2;
     }
 
-    curl_global_cleanup();
-
     return 0;
 }
 
@@ -101,13 +100,22 @@ int print_coins(const result_t* res) {
         return -1;
     }
 
+    printf("\x1B[33mRANK\tSYMBOL\t24H\t7D\tVAL\x1B[0m\n");
     for (size_t i = 0; i < actual; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < COLUMN_SIZE; j++) {
-            const jsmntok_t* val = tokens + i + values[j];
-            printf("%.*s\t",
-                    val->end - val->start, res->data + val->start);
+                const jsmntok_t* val = tokens + i + values[j];
+                char* color = "";
+                if (j == 2 || j == 3) {
+                    if (res->data[val->start] == '-') {
+                        color = "\x1B[31m";
+                    } else {
+                        color = "\x1B[32m";
+                    }
+                }
 
+                printf("%s%.*s\x1B[0m\t", color,
+                        val->end - val->start, res->data + val->start);
             }
             printf("\n");
         }
