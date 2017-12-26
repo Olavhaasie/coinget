@@ -8,6 +8,8 @@ JSMNLIB = $(JSMNDIR)/libjsmn.a
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
 TARGET = coinget
 
+INSTDIR = /usr/local/bin
+
 all: $(TARGET)
 
 $(TARGET): $(JSMNLIB)
@@ -25,8 +27,14 @@ libjsmn:
 tags:
 	$(TAG) *.c
 
+install: $(TARGET)
+	install -m 0755 $^ $(INSTDIR)
+
+uninstall:
+	rm -f $(INSTDIR)/$(TARGET)
+
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: all $(TARGET) tags clean
+.PHONY: all $(TARGET) tags install uninstall clean
 
