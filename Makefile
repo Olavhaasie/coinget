@@ -30,7 +30,7 @@ libjsmn:
 	$(MAKE) -C $(JSMNDIR)
 
 tags:
-	$(TAG) *.c
+	$(TAG) *.h *.c
 
 install: $(TARGET)
 	install -m 0755 $^ $(INSTDIR)

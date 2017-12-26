@@ -66,7 +66,7 @@ static int get_coins(const char* url, result_t* res) {
     return 0;
 }
 
-static int print_coins(const result_t* res) {
+static int print_coins(const result_t* res, const char* currency) {
     static jsmn_parser parser;
 
     jsmn_init(&parser);
@@ -81,7 +81,13 @@ static int print_coins(const result_t* res) {
         return -1;
     }
 
-    printf("\x1B[33mRANK\tSYMBOL\t24H\t7D\tVAL\x1B[0m\n");
+    // check if error returned
+    if (strncmp(res->data + tokens[1].start, "error", 5) == 0) {
+        fprintf(stderr, "%.*s\n", tokens[2].end - tokens[2].start, res->data + tokens[2].start);
+        return -2;
+    }
+
+    printf("\x1B[33mRANK\tSYMBOL\t24H\t7D\tPRICE (%s)\x1B[0m\n", currency);
     for (size_t i = 0; i < actual; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < COLUMN_SIZE; j++) {
@@ -119,7 +125,7 @@ int show_coins(size_t start, size_t limit, const char* convert) {
         return err;
     }
 
-    err = print_coins(&res);
+    err = print_coins(&res, convert);
     if (err) {
         return err;
     }
@@ -142,14 +148,13 @@ int show_coin(const char* symbol, const char* convert) {
         return err;
     }
 
-    err = print_coins(&res);
+    err = print_coins(&res, convert);
     if (err) {
         return err;
     }
 
     curl_global_cleanup();
     free(res.data);
-
     return 0;
 }
 
