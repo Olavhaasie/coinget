@@ -5,7 +5,7 @@ CFLAGS = -std=c99 -Wall
 JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
-TARGET = getcoin
+TARGET = coinget
 
 all: $(TARGET)
 
@@ -24,5 +24,5 @@ libjsmn:
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: all debug getcoin clean
+.PHONY: all debug $(TARGET) clean
 
