@@ -1,0 +1,64 @@
+.\" manpage for coinget
+.TH COINGET 1 "December 2017" "1.0.0" "coinget man page"
+.SH NAME
+coinget \- display values and ranking of your favorite cryptos in terminal
+
+.SH SYNOPSIS
+.B coinget
+[-?V]
+[-c SYM]
+[-i SYM]
+[-l NUM]
+[-s NUM]
+[--convert=SYM]
+[--coin id=SYM]
+[--limit=NUM]
+[--start=NUM]
+[--help]
+j--usage]
+[--version]
+
+.SH DESCRIPTION
+.B coinget
+Displays ranking, price and market change in 1 day and 1 week.
+
+.SH OPTIONS
+.TP
+.BR \-c ", " \-\-convert =\fICUR\fR " [EUR]"
+Set the currency to display value.
+Default is euro.
+Available values are AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PKR, PLN, RUB, SEK, SGD, THB, TRY, TWD, ZAR.
+
+.TP
+.BR \-i ", " \-\-coin\-id =\fIID\fR " []"
+Display a specific crypto.
+Default is none.
+
+.TP
+.BR \-l ", " \-\-limit =\fINUM\fR " [25]"
+limit amount of cryptos shown.
+Default is 25.
+
+.TP
+.BR \-s ", " \-\-start =\fINUM\fR " [0]"
+start displaying from given rank number.
+Default is 0.
+
+.TP
+.BR \-? ", " \-\-help
+Give help list.
+
+.TP
+.BR  "    " \-\-usage
+Give a short usage message.
+
+.TP
+.BR \-V ", " \-\-version
+Print program version
+
+.SH BUGS
+report bugs to https://github.com/Olavhaasie/coinget/issues
+
+.SH AUTHOR
+Olavhaasie (https://github.com/Olavhaasie)
+

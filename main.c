@@ -10,7 +10,7 @@ struct argp_option options[] = {
         { "start", 's', "NUM", 0, "start displaying from given rank", 0},
         { "limit", 'l', "NUM", 0, "display NUM cryptos", 0},
         { "convert", 'c', "SYM", 0, "display value in currency", 0},
-        { "coin id", 'i', "SYM", 0, "display specific crypto", 0},
+        { "coin-id", 'i', "SYM", 0, "display specific crypto", 0},
         { 0 }
 };
 

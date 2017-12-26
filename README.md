@@ -9,6 +9,8 @@
 
 Display the values and ranking of your favorite crypto currency in your terminal.💸
 
+![example](doc/output.png "Sample output")
+
 ## Help ##
 
     Optional arguments:
