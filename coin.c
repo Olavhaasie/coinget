@@ -5,6 +5,7 @@
 #include "jsmn/jsmn.h"
 
 #define TKN_SIZE 1024
+#define URL_SIZE 256
 
 #define RANK 8
 #define SYMBOL 6
@@ -104,8 +105,8 @@ int show_coins(size_t start, size_t limit, const char* convert) {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     result_t res;
-    char url[256];
-    snprintf(url, 256, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
+    char url[URL_SIZE];
+    snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
             start, limit, convert);
 
     int err = get_coins(url, &res);
@@ -120,6 +121,30 @@ int show_coins(size_t start, size_t limit, const char* convert) {
 
     curl_global_cleanup();
     free(res.data);
+    return 0;
+}
+
+int show_coin(const char* symbol, const char* convert) {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    result_t res;
+    char url[URL_SIZE];
+    snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
+            symbol, convert);
+
+    int err = get_coins(url, &res);
+    if (err) {
+        return err;
+    }
+
+    err = print_coins(&res);
+    if (err) {
+        return err;
+    }
+
+    curl_global_cleanup();
+    free(res.data);
+
     return 0;
 }
 
