@@ -10,6 +10,11 @@ TARGET = coinget
 
 INSTDIR = /usr/local/bin
 
+OS := $(shell uname)
+ifeq ($(OS), Darwin)
+    LDFLAGS +=  -largp
+endif
+
 all: $(TARGET)
 
 $(TARGET): $(JSMNLIB)
