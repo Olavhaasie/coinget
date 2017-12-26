@@ -1,4 +1,5 @@
 CC = gcc
+TAG = ctags
 RM = rm -f
 SRC = $(wildcard *.c)
 CFLAGS = -std=c99 -Wall
@@ -21,8 +22,11 @@ $(JSMNLIB): libjsmn
 libjsmn:
 	$(MAKE) -C $(JSMNDIR)
 
+tags:
+	$(TAG) *.c
+
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: all debug $(TARGET) clean
+.PHONY: all tags clean
 
