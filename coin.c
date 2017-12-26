@@ -70,8 +70,12 @@ static int print_coins(const result_t* res) {
     static jsmn_parser parser;
 
     jsmn_init(&parser);
-    jsmntok_t tokens[TKN_SIZE];
-    int actual = jsmn_parse(&parser, res->data, res->size, tokens, TKN_SIZE);
+    jsmntok_t* tokens = malloc(sizeof(jsmntok_t) * TKN_SIZE);
+    size_t count = 1;
+    int actual;
+    while ((actual = jsmn_parse(&parser, res->data, res->size, tokens, count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
+        tokens = realloc(tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
+    }
     if (actual < 0) {
         fprintf(stderr, "failed to parse json with error code %d\n", actual);
         return -1;
@@ -98,6 +102,7 @@ static int print_coins(const result_t* res) {
         }
     }
 
+    free(tokens);
     return 0;
 }
 
