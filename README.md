@@ -20,14 +20,16 @@ Display the values and ranking of your favorite crypto currency in your terminal
       -V, --version              Print program version
 
 ## Bugs ##
-Report bugs or questions to [https://github.com/Olavhaasie/coinget/issues/new].
+Report bugs or questions to <https://github.com/Olavhaasie/coinget/issues/new>.
 
 ## Dependencies ##
-+ [https://curl.haxx.se/libcurl/](libcurl)
-+ [https://www.gnu.org/software/libc/manual/html_node/Argp.html](argp)
-+ and of course [https://github.com/zserge/jsmn](jsmn)
++ [libcurl](https://curl.haxx.se/libcurl/)
++ [argp](https://www.gnu.org/software/libc/manual/html_node/Argp.html)
++ and of course [jsmn](https://github.com/zserge/jsmn)
 
-The first two must be downloaded/installed. The JSON library is included as git sub module. The code was developed on Linux, but will also possibly work on MacOS.
+The first two must be downloaded/installed. The JSON library is included as git sub module.
+
+The code was developed on Linux, but will also possibly work on MacOS.
 
 ## Compile ##
 first clone the repository
