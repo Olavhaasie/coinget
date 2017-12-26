@@ -4,7 +4,7 @@
 #include "coin.h"
 
 const char *argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
-const char *argp_program_version = "coinget v1.0";
+const char *argp_program_version = VERSION;
 
 struct argp_option options[] = {
         { "start", 's', "NUM", 0, "start displaying from given rank", 0},

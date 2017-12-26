@@ -1,12 +1,15 @@
 CC = gcc
 TAG = ctags
 RM = rm -f
+
 SRC = $(wildcard *.c)
-CFLAGS = -std=c99 -Wall
+GIT_VERSION := $(shell git describe --abbrev=0 --tags)
+TARGET = coinget
+
+CFLAGS = -std=c99 -Wall -DVERSION="\"$(TARGET) $(GIT_VERSION)\""
 JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
-TARGET = coinget
 
 INSTDIR = /usr/local/bin
 
