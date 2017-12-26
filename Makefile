@@ -28,5 +28,5 @@ tags:
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: all tags clean
+.PHONY: all $(TARGET) tags clean
 

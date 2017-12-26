@@ -1,5 +1,5 @@
+#include "coin.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
 #include "jsmn/jsmn.h"
@@ -20,9 +20,6 @@ typedef struct {
     size_t size;
 } result_t;
 
-int get_coins(const char* url, result_t* res);
-int print_coins(const result_t* result);
-
 static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
     const size_t realSize = size * nmemb;
     result_t* res = (result_t*) userdata;
@@ -39,28 +36,7 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
     return realSize;
 }
 
-int main(int argc, char* argv[]) {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
-    result_t res;
-    const char* url = "https://api.coinmarketcap.com/v1/ticker/?limit=10&convert=EUR";
-
-    int err = get_coins(url, &res);
-    if (err) {
-        return err;
-    }
-
-    err = print_coins(&res);
-    if (err) {
-        return err;
-    }
-
-    curl_global_cleanup();
-    free(res.data);
-    return 0;
-}
-
-int get_coins(const char* url, result_t* res) {
+static int get_coins(const char* url, result_t* res) {
     CURL* curl = curl_easy_init();
 
     if(curl) {
@@ -89,7 +65,7 @@ int get_coins(const char* url, result_t* res) {
     return 0;
 }
 
-int print_coins(const result_t* res) {
+static int print_coins(const result_t* res) {
     static jsmn_parser parser;
 
     jsmn_init(&parser);
@@ -121,6 +97,29 @@ int print_coins(const result_t* res) {
         }
     }
 
+    return 0;
+}
+
+int show_coins(size_t start, size_t limit, const char* convert) {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    result_t res;
+    char url[256];
+    snprintf(url, 256, "https://api.coinmarketcap.com/v1/ticker/?start=%d&limit=%d&convert=%s",
+            start, limit, convert);
+
+    int err = get_coins(url, &res);
+    if (err) {
+        return err;
+    }
+
+    err = print_coins(&res);
+    if (err) {
+        return err;
+    }
+
+    curl_global_cleanup();
+    free(res.data);
     return 0;
 }
 
