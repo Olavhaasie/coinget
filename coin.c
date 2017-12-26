@@ -92,17 +92,24 @@ static int print_coins(const result_t* res, const char* currency) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < COLUMN_SIZE; j++) {
                 const jsmntok_t* val = tokens + i + values[j];
+                char* str = res->data + val->start;
+                int len = val->end - val->start;
                 char* color = "";
                 if (j == 2 || j == 3) {
                     if (res->data[val->start] == '-') {
                         color = "\x1B[31m";
+                        str++;
+                        len--;
+                    } else if (res->data[val->start] == 'n') {
+                        str = "-";
+                        len = 1;
+                        color = "\x1B[33m";
                     } else {
                         color = "\x1B[32m";
                     }
                 }
 
-                printf("%s%.*s\x1B[0m\t", color,
-                        val->end - val->start, res->data + val->start);
+                printf("%s%.*s\x1B[0m\t", color, len, str);
             }
             printf("\n");
         }
