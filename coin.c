@@ -105,7 +105,7 @@ int show_coins(size_t start, size_t limit, const char* convert) {
 
     result_t res;
     char url[256];
-    snprintf(url, 256, "https://api.coinmarketcap.com/v1/ticker/?start=%d&limit=%d&convert=%s",
+    snprintf(url, 256, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
             start, limit, convert);
 
     int err = get_coins(url, &res);
