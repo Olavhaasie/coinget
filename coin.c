@@ -88,7 +88,7 @@ static int print_coins(const result_t* res, const char* currency) {
     }
 
     printf("\x1B[33mRANK\tSYMBOL\t24H\t7D\tPRICE (%s)\x1B[0m\n", currency);
-    for (size_t i = 0; i < actual; i++) {
+    for (int i = 0; i < actual; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < COLUMN_SIZE; j++) {
                 const jsmntok_t* val = tokens + i + values[j];
