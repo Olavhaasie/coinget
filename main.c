@@ -26,11 +26,25 @@ static int parse_opt (int key, char* arg, struct argp_state* state) {
     arguments* args = state->input;
     switch (key) {
         case 's':
-            args->start = atoi(arg) - 1;
-            break;
+            {
+                const long tolong = atol(arg);
+                if (tolong <= 0) {
+                    return ARGP_ERR_UNKNOWN;
+                } else {
+                    args->start = tolong - 1;
+                }
+                break;
+            }
         case 'l':
-            args->limit = atoi(arg);
-            break;
+            {
+                const long tolong = atol(arg);
+                if (tolong <= 0) {
+                    return ARGP_ERR_UNKNOWN;
+                } else {
+                    args->limit = tolong;
+                }
+                break;
+            }
         case 'c':
             args->convert = arg;
             break;
