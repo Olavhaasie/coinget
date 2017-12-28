@@ -11,16 +11,9 @@ static struct argp_option options[] = {
         { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
         { "convert", 'c', "SYM", 0, "display value in currency", 0 },
         { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
+        { "no-color", 'n', 0, 0, "disable color output", 0 },
         { 0 }
 };
-
-typedef struct {
-    size_t start;
-    size_t limit;
-    char* convert;
-    char* symbol;
-    char specific;
-} arguments;
 
 static int parse_opt (int key, char* arg, struct argp_state* state) {
     arguments* args = state->input;
@@ -52,6 +45,9 @@ static int parse_opt (int key, char* arg, struct argp_state* state) {
             args->symbol = arg;
             args->specific = 1;
             break;
+        case 'n':
+            args->color_enabled = 0;
+            break;
         default:
             return ARGP_ERR_UNKNOWN;
     }
@@ -66,16 +62,12 @@ int main(int argc, char* argv[]) {
     args.limit = 25;
     args.convert = "EUR";
     args.specific = 0;
+    args.color_enabled = 1;
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
     coin_init();
 
-    if (args.specific) {
-        return show_coin(args.symbol, args.convert);
-    } else {
-        return show_coins(args.start, args.limit, args.convert);
-    }
+    return display_result(&args);
 }
-
 

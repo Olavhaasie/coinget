@@ -2,11 +2,18 @@
 #ifndef COIN_H
 #define COIN_H
 
+typedef struct {
+    size_t start;
+    size_t limit;
+    char* convert;
+    char* symbol;
+    int specific;
+    int color_enabled;
+} arguments;
+
 void coin_init();
 
-int show_coins(size_t start, size_t limit, const char* convert);
-
-int show_coin(const char* symbol, const char* convert);
+int display_result(const arguments* args);
 
 #endif
 

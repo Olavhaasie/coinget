@@ -4,6 +4,11 @@
 #include <curl/curl.h>
 #include "jsmn/jsmn.h"
 
+#define COLOR_RED    "\x1b[31m"
+#define COLOR_GREEN  "\x1b[32m"
+#define COLOR_YELLOW "\x1b[33m"
+#define COLOR_RESET  "\x1b[0m"
+
 #define TKN_SIZE 1024
 #define URL_SIZE 256
 
@@ -66,7 +71,7 @@ static int get_coins(const char* url, result_t* res) {
     return 0;
 }
 
-static int print_coins(const result_t* res, const char* currency) {
+static int print_coins(const result_t* res, const char* currency, int color_enabled) {
     static jsmn_parser parser;
 
     jsmn_init(&parser);
@@ -87,7 +92,12 @@ static int print_coins(const result_t* res, const char* currency) {
         return -2;
     }
 
-    printf("\x1B[33mRANK\tSYMBOL\t24H\t7D\tPRICE (%s)\x1B[0m\n", currency);
+    if (color_enabled) {
+        printf(COLOR_YELLOW "RANK\tSYMBOL\t24H\t7D\tPRICE (%s)\n" COLOR_RESET, currency);
+    } else {
+        printf("RANK\tSYMBOL\t24H\t7D\tPRICE (%s)\n", currency);
+    }
+
     for (int i = 0; i < actual; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < COLUMN_SIZE; j++) {
@@ -97,19 +107,24 @@ static int print_coins(const result_t* res, const char* currency) {
                 char* color = "";
                 if (j == 2 || j == 3) {
                     if (res->data[val->start] == '-') {
-                        color = "\x1B[31m";
-                        str++;
-                        len--;
+                        color = COLOR_RED;
                     } else if (res->data[val->start] == 'n') {
                         str = "-";
                         len = 1;
-                        color = "\x1B[33m";
+                        color = COLOR_YELLOW;
                     } else {
-                        color = "\x1B[32m";
+                        str--;
+                        len++;
+                        *str = ' ';
+                        color = COLOR_GREEN;
                     }
                 }
 
-                printf("%s%.*s\x1B[0m\t", color, len, str);
+                if (color_enabled) {
+                    printf("%s%.*s" COLOR_RESET "\t", color, len, str);
+                } else {
+                    printf("%.*s\t", len, str);
+                }
             }
             printf("\n");
         }
@@ -129,38 +144,23 @@ void coin_init() {
     atexit(cleanup);
 }
 
-int show_coins(size_t start, size_t limit, const char* convert) {
+int display_result(const arguments* args) {
     result_t res;
     char url[URL_SIZE];
-    snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
-            start, limit, convert);
+    if (args->specific) {
+        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
+                args->symbol, args->convert);
+    } else {
+        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
+                args->start, args->limit, args->convert);
+    }
 
     int err = get_coins(url, &res);
     if (err) {
         return err;
     }
 
-    err = print_coins(&res, convert);
-    if (err) {
-        return err;
-    }
-
-    free(res.data);
-    return 0;
-}
-
-int show_coin(const char* symbol, const char* convert) {
-    result_t res;
-    char url[URL_SIZE];
-    snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
-            symbol, convert);
-
-    int err = get_coins(url, &res);
-    if (err) {
-        return err;
-    }
-
-    err = print_coins(&res, convert);
+    err = print_coins(&res, args->convert, args->color_enabled);
     if (err) {
         return err;
     }
