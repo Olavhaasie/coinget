@@ -119,9 +119,17 @@ static int print_coins(const result_t* res, const char* currency) {
     return 0;
 }
 
-int show_coins(size_t start, size_t limit, const char* convert) {
+static void cleanup() {
+    curl_global_cleanup();
+}
+
+void coin_init() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
+    atexit(cleanup);
+}
+
+int show_coins(size_t start, size_t limit, const char* convert) {
     result_t res;
     char url[URL_SIZE];
     snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
@@ -137,14 +145,11 @@ int show_coins(size_t start, size_t limit, const char* convert) {
         return err;
     }
 
-    curl_global_cleanup();
     free(res.data);
     return 0;
 }
 
 int show_coin(const char* symbol, const char* convert) {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
     result_t res;
     char url[URL_SIZE];
     snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
@@ -160,7 +165,6 @@ int show_coin(const char* symbol, const char* convert) {
         return err;
     }
 
-    curl_global_cleanup();
     free(res.data);
     return 0;
 }

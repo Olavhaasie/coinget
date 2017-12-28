@@ -3,14 +3,14 @@
 
 #include "coin.h"
 
-const char *argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
-const char *argp_program_version = VERSION;
+const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
+const char* argp_program_version = VERSION;
 
-struct argp_option options[] = {
-        { "start", 's', "NUM", 0, "start displaying from given rank", 0},
-        { "limit", 'l', "NUM", 0, "display NUM cryptos", 0},
-        { "convert", 'c', "SYM", 0, "display value in currency", 0},
-        { "coin-id", 'i', "SYM", 0, "display specific crypto", 0},
+static struct argp_option options[] = {
+        { "start", 's', "NUM", 0, "start displaying from given rank", 0 },
+        { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
+        { "convert", 'c', "SYM", 0, "display value in currency", 0 },
+        { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
         { 0 }
 };
 
@@ -58,8 +58,9 @@ static int parse_opt (int key, char* arg, struct argp_state* state) {
     return 0;
 }
 
+static struct argp argp = { options, parse_opt, 0, "display cryptocurrency values in terminal" , 0, 0, 0 };
+
 int main(int argc, char* argv[]) {
-    struct argp argp = { options, parse_opt, 0, "display cryptocurrency values in terminal" , 0, 0, 0 };
     arguments args;
     args.start = 0;
     args.limit = 25;
@@ -67,6 +68,8 @@ int main(int argc, char* argv[]) {
     args.specific = 0;
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
+
+    coin_init();
 
     if (args.specific) {
         return show_coin(args.symbol, args.convert);
