@@ -48,19 +48,26 @@ static int parse_opt (int key, char* arg, struct argp_state* state) {
         case 'n':
             args->color_enabled = 0;
             break;
+        case ARGP_KEY_ARG:
+            if (args->specific == 0) {
+                args->symbol = arg;
+                args->specific = 1;
+            }
+            break;
         default:
             return ARGP_ERR_UNKNOWN;
     }
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, 0, "display cryptocurrency values in terminal" , 0, 0, 0 };
+static struct argp argp = { options, parse_opt, "[CRYPTO ID]", "display cryptocurrency values in terminal" , 0, 0, 0 };
 
 int main(int argc, char* argv[]) {
     arguments args;
     args.start = 0;
     args.limit = 25;
     args.convert = "EUR";
+    args.symbol = "";
     args.specific = 0;
     args.color_enabled = 1;
 
