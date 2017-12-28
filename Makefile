@@ -11,7 +11,10 @@ JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
 
-INSTDIR = /usr/local/bin
+INSTDIR = /usr/local
+INSTBIN = $(INSTDIR)/bin
+INSTMAN = $(INSTDIR)/man/man1
+MANPAGE = $(TARGET).1
 
 OS := $(shell uname)
 ifeq ($(OS), Darwin)
@@ -36,10 +39,14 @@ tags:
 	$(TAG) *.h *.c
 
 install: $(TARGET)
-	install -m 0755 $^ $(INSTDIR)
+	test -d $(INSTBIN) || mkdir -p $(INSTBIN)
+	test -d $(INSTMAN) || mkdir -p $(INSTMAN)
+	install -m 0755 $^ $(INSTBIN)
+	install -m 0644 doc/$(MANPAGE) $(INSTMAN)
 
 uninstall:
-	rm -f $(INSTDIR)/$(TARGET)
+	rm -f $(INSTBIN)/$(TARGET)
+	rm -f $(INSTMAN)/$(MANPAGE)
 
 clean:
 	$(RM) $(TARGET)
