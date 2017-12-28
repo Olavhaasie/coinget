@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
-#include "jsmn/jsmn.h"
+#include JSMN
 
 #define COLOR_RED    "\x1b[31m"
 #define COLOR_GREEN  "\x1b[32m"

@@ -2,13 +2,14 @@ CC = gcc
 TAG = ctags
 RM = rm -f
 
-SRC = $(wildcard *.c)
+SRC = $(wildcard src/*.c)
 GIT_VERSION := $(shell git describe --abbrev=0 --tags)
 TARGET = coinget
 
-CFLAGS = -std=c99 -Wall -DVERSION="\"$(TARGET) $(GIT_VERSION)\""
 JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
+
+CFLAGS = -std=c99 -Wall -DVERSION="\"$(TARGET) $(GIT_VERSION)\"" -DJSMN="\"$(JSMNDIR)/jsmn.h\""
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
 
 INSTDIR = /usr/local
@@ -18,7 +19,7 @@ MANPAGE = $(TARGET).1
 
 OS := $(shell uname)
 ifeq ($(OS), Darwin)
-    LDFLAGS +=  -largp
+    LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn -largp
 endif
 
 all: $(TARGET)
@@ -51,5 +52,5 @@ uninstall:
 clean:
 	$(RM) $(TARGET)
 
-.PHONY: all $(TARGET) tags install uninstall clean
+.PHONY: all $(TARGET) libjsmn tags install uninstall clean
 
