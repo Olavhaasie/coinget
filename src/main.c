@@ -7,11 +7,13 @@ const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/is
 const char* argp_program_version = VERSION;
 
 static struct argp_option options[] = {
+        { 0, 0, 0, 0, "Program options:", 1},
         { "start", 's', "NUM", 0, "start displaying from given rank", 0 },
         { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
         { "convert", 'c', "SYM", 0, "display value in currency", 0 },
         { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
         { "no-color", 'n', 0, 0, "disable color output", 0 },
+        { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
 };
 
