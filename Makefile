@@ -9,7 +9,7 @@ TARGET = coinget
 JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
 
-CFLAGS = -std=c99 -Wall -DVERSION="\"$(TARGET) $(GIT_VERSION)\"" -DJSMN="\"$(JSMNDIR)/jsmn.h\""
+CFLAGS = -std=c99 -Wall -I$(JSMNDIR) -DVERSION="\"$(TARGET) $(GIT_VERSION)\""
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
 
 INSTDIR = /usr/local
