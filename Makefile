@@ -37,7 +37,7 @@ libjsmn:
 	$(MAKE) -C $(JSMNDIR)
 
 tags:
-	$(TAG) *.h *.c
+	$(TAG) src/*.h src/*.c
 
 install: $(TARGET)
 	test -d $(INSTBIN) || mkdir -p $(INSTBIN)
@@ -46,11 +46,14 @@ install: $(TARGET)
 	install -m 0644 doc/$(MANPAGE) $(INSTMAN)
 
 uninstall:
-	rm -f $(INSTBIN)/$(TARGET)
-	rm -f $(INSTMAN)/$(MANPAGE)
+	$(RM) -f $(INSTBIN)/$(TARGET)
+	$(RM) -f $(INSTMAN)/$(MANPAGE)
 
 clean:
 	$(RM) $(TARGET)
+	$(RM) tags
+	$(MAKE) clean -C $(JSMNDIR)
 
-.PHONY: all $(TARGET) libjsmn tags install uninstall clean
+
+.PHONY: all $(TARGET) libjsmn install uninstall clean
 
