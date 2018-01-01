@@ -12,20 +12,26 @@
 #define TKN_SIZE 1024
 #define URL_SIZE 256
 
-#define RANK 8
-#define SYMBOL 6
-#define DAY_CHANGE 26
-#define WEEK_CHANGE 28
-#define PRICE_USD 10
-#define PRICE_CON 32
-#define COLUMN_SIZE 5
+#define RANK        { "RANK", 8, 6, 0 }
+#define SYMBOL      { "SYMBOL", 6, 8, 0 }
+#define DAY_CHANGE  { " 24H", 26, 10, 1 }
+#define WEEK_CHANGE { " 7D", 28, 10, 1 }
+#define PRICE_USD   { "PRICE (USD)", 10, 12, 0 }
+#define PRICE_CON   { "PRICE", 32, 12, 0 }
 
-static int values[] = {RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD};
 
 typedef struct {
     char* data;
     size_t size;
 } result_t;
+
+typedef struct {
+    char* header;
+    size_t offset;
+    int padding;
+    int use_color;
+} column_t;
+
 
 static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
     const size_t realSize = size * nmemb;
@@ -72,62 +78,71 @@ static int get_coins(const char* url, result_t* res) {
     return 0;
 }
 
-static int print_coins(const result_t* res, const char* currency, int color_enabled) {
+static int parse_json(const result_t* res, jsmntok_t** tokens) {
     static jsmn_parser parser;
 
     jsmn_init(&parser);
-    jsmntok_t* tokens = malloc(sizeof(jsmntok_t) * TKN_SIZE);
+    *tokens = malloc(sizeof(jsmntok_t) * TKN_SIZE);
     size_t count = 1;
-    int actual;
-    while ((actual = jsmn_parse(&parser, res->data, res->size, tokens, count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
-        tokens = realloc(tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
+    int size;
+    while ((size = jsmn_parse(&parser, res->data, res->size, *tokens, count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
+        *tokens = realloc(*tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
     }
-    if (actual < 0) {
-        free(tokens);
-        fprintf(stderr, "failed to parse json with error code %d\n", actual);
+    if (size < 0) {
+        free(*tokens);
+        fprintf(stderr, "failed to parse json with error code %d\n", size);
         return -1;
     }
 
     // check if error returned
-    if (strncmp(res->data + tokens[1].start, "error", 5) == 0) {
-        free(tokens);
-        fprintf(stderr, "%.*s\n", tokens[2].end - tokens[2].start, res->data + tokens[2].start);
+    if (strncmp(res->data + (*tokens)[1].start, "error", 5) == 0) {
+        free(*tokens);
+        fprintf(stderr, "%.*s\n", (*tokens)[2].end - (*tokens)[2].start, res->data + (*tokens)[2].start);
         return -2;
     }
 
-    if (color_enabled) {
-        printf(COLOR_YELLOW "RANK\tSYMBOL\t24H\t7D\tPRICE (%s)\n" COLOR_RESET, currency);
-    } else {
-        printf("RANK\tSYMBOL\t24H\t7D\tPRICE (%s)\n", currency);
+    return size;
+}
+
+static int print_coins(const result_t* res, const column_t columns[], size_t size, int color_enabled) {
+    jsmntok_t* tokens = NULL;
+    int token_size = parse_json(res, &tokens);
+    if (token_size < 0 || tokens == NULL) {
+        return -1;
     }
 
-    for (int i = 0; i < actual; i++) {
+    if (color_enabled) printf(COLOR_YELLOW);
+    for (size_t i = 0; i < size; i++) {
+        printf("%-*s", columns[i].padding, columns[i].header);
+    }
+    if (color_enabled) printf(COLOR_RESET);
+    printf("\n");
+
+    for (int i = 0; i < token_size; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
-            for (size_t j = 0; j < COLUMN_SIZE; j++) {
-                const jsmntok_t* val = tokens + i + values[j];
+            for (size_t j = 0; j < size; j++) {
+                const jsmntok_t* val = tokens + i + columns[j].offset;
                 char* str = res->data + val->start;
                 int len = val->end - val->start;
                 char* color = "";
-                if (j == 2 || j == 3) {
-                    if (res->data[val->start] == '-') {
+
+                if (val->type == JSMN_PRIMITIVE && str[0] == 'n') {
+                    str[0] = '-';
+                    len = 1;
+                }
+                if (columns[j].use_color) {
+                    if (str[0] == '-') {
                         color = COLOR_RED;
-                    } else if (res->data[val->start] == 'n') {
-                        str = "-";
-                        len = 1;
-                        color = COLOR_YELLOW;
                     } else {
-                        str--;
+                        (--str)[0] = ' ';
                         len++;
-                        *str = ' ';
                         color = COLOR_GREEN;
                     }
                 }
 
-                if (color_enabled) {
-                    printf("%s%.*s" COLOR_RESET "\t", color, len, str);
-                } else {
-                    printf("%.*s\t", len, str);
-                }
+                if (color_enabled) printf("%s", color);
+                printf("%-*.*s", columns[j].padding, len, str);
+                if (color_enabled) printf(COLOR_RESET);
             }
             printf("\n");
         }
@@ -164,11 +179,15 @@ int display_result(const arguments* args) {
     }
 
     if (args->convert[0] == '\0') {
-        values[4] = PRICE_USD;
-        err = print_coins(&res, "USD", args->color_enabled);
+        column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD};
+        err = print_coins(&res, columns, 5, args->color_enabled);
     } else {
-        values[4] = PRICE_CON;
-        err = print_coins(&res, args->convert, args->color_enabled);
+        column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_CON };
+        char header[16];
+        snprintf(header, 16, "PRICE (%s)", args->convert);
+        columns[4].header = header;
+
+        err = print_coins(&res, columns, 5, args->color_enabled);
     }
 
     free(res.data);

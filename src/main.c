@@ -27,14 +27,13 @@ static const char* currencies[] = {
     "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
 
 static int is_available(const char* curr) {
-    for (size_t i = 0; i < CURR_SIZE; i++) {
-        if (strlen(curr) == 3
-            && toupper(curr[0]) == currencies[i][0]
-            && toupper(curr[1]) == currencies[i][1]
-            && toupper(curr[2]) == currencies[i][2])
-            return 1;
+    if (strlen(curr) == 3) {
+        for (size_t i = 0; i < CURR_SIZE; i++) {
+            if (strncmp(curr, currencies[i], 3) == 0) {
+                return 1;
+            }
+        }
     }
-
     return 0;
 }
 
