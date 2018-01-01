@@ -12,15 +12,17 @@ Display the values and ranking of your favorite crypto currency in your terminal
 ![example](doc/output.png "Sample output")
 
 ## Help ##
+ Program options:
+  -c, --convert=SYM          display value in currency
+  -i, --coin-id=SYM          display specific crypto
+  -l, --limit=NUM            display NUM cryptos
+  -n, --no-color             disable color output
+  -s, --start=NUM            start displaying from given rank
 
-    Optional arguments:
-    -c, --convert=SYM          display value in currency
-    -i, --coin id=SYM          display specific crypto
-    -l, --limit=NUM            display NUM cryptos
-    -s, --start=NUM            start displaying from given rank
-    -?, --help                 Give this help list
-        --usage                Give a short usage message
-    -V, --version              Print program version
+ Informational options:
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
 
 The `-c` option only supports AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PKR, PLN, RUB, SEK, SGD, THB, TRY, TWD, ZAR.
 The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum`.
