@@ -40,18 +40,24 @@ Also the cryptocurrency information originates from <https://coinmarketcap.com>.
 
 The code was developed on Linux, but will also possibly work on MacOS.
 
-## Compile ##
+## Install ##
 first clone the repository
 
     $ git clone --recursive https://github.com/Olavhaasie/coinget
 
 The option `recursive` will also clone the `jsmn` dependency. Then
 
-    $ cd coinget && make
+    $ cd coinget
+    $ make
+    $ sudo make install
 
 And now you can run with
 
-    $ ./coinget
+    $ coinget
+
+If you want to remove the program you can do
+
+    $ sudo make uninstall
 
 ## License ##
 This software is distributed under MIT license 📝
