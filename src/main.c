@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <argp.h>
+#include <string.h>
 
 #include "coin.h"
+
+#define CURR_SIZE 31
 
 const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
 const char* argp_program_version = VERSION;
@@ -17,31 +20,50 @@ static struct argp_option options[] = {
         { 0 }
 };
 
+static const char* currencies[] = {
+    "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK",
+    "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY",
+    "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
+    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
+
+static int is_available(const char* curr) {
+    for (size_t i = 0; i < CURR_SIZE; i++) {
+        if (strlen(curr) == 3
+            && toupper(curr[0]) == currencies[i][0]
+            && toupper(curr[1]) == currencies[i][1]
+            && toupper(curr[2]) == currencies[i][2])
+            return 1;
+    }
+
+    return 0;
+}
+
 static int parse_opt (int key, char* arg, struct argp_state* state) {
     arguments* args = state->input;
+    long tolong = 0;
     switch (key) {
         case 's':
-            {
-                const long tolong = atol(arg);
-                if (tolong <= 0) {
-                    return ARGP_ERR_UNKNOWN;
-                } else {
-                    args->start = tolong - 1;
-                }
-                break;
+            tolong = atol(arg);
+            if (tolong <= 0) {
+                argp_error(state, "argument must be positive integer");
+            } else {
+                args->start = tolong - 1;
             }
+            break;
         case 'l':
-            {
-                const long tolong = atol(arg);
-                if (tolong <= 0) {
-                    return ARGP_ERR_UNKNOWN;
-                } else {
-                    args->limit = tolong;
-                }
-                break;
+            tolong = atol(arg);
+            if (tolong <= 0) {
+                argp_error(state, "argument must be positive integer");
+            } else {
+                args->limit = tolong;
             }
+            break;
         case 'c':
-            args->convert = arg;
+            if (is_available(arg)) {
+                args->convert = arg;
+            } else {
+                argp_error(state, "invalid currency '%s'", arg);
+            }
             break;
         case 'i':
             args->symbol = arg;
