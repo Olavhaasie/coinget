@@ -84,13 +84,13 @@ static int parse_opt (int key, char* arg, struct argp_state* state) {
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, "[CRYPTO ID]", "display cryptocurrency values in terminal" , 0, 0, 0 };
+static struct argp argp = { options, parse_opt, "[CRYPTO ID]", "display cryptocurrency values in terminal", 0, 0, 0 };
 
 int main(int argc, char* argv[]) {
     arguments args;
     args.start = 0;
     args.limit = 25;
-    args.convert = "EUR";
+    args.convert = "";
     args.symbol = "";
     args.specific = 0;
     args.color_enabled = 1;

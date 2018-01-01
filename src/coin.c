@@ -16,10 +16,11 @@
 #define SYMBOL 6
 #define DAY_CHANGE 26
 #define WEEK_CHANGE 28
-#define VALUE 32
+#define PRICE_USD 10
+#define PRICE_CON 32
 #define COLUMN_SIZE 5
 
-static int values[COLUMN_SIZE] = {RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, VALUE};
+static int values[] = {RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD};
 
 typedef struct {
     char* data;
@@ -82,12 +83,14 @@ static int print_coins(const result_t* res, const char* currency, int color_enab
         tokens = realloc(tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
     }
     if (actual < 0) {
+        free(tokens);
         fprintf(stderr, "failed to parse json with error code %d\n", actual);
         return -1;
     }
 
     // check if error returned
     if (strncmp(res->data + tokens[1].start, "error", 5) == 0) {
+        free(tokens);
         fprintf(stderr, "%.*s\n", tokens[2].end - tokens[2].start, res->data + tokens[2].start);
         return -2;
     }
@@ -160,12 +163,15 @@ int display_result(const arguments* args) {
         return err;
     }
 
-    err = print_coins(&res, args->convert, args->color_enabled);
-    if (err) {
-        return err;
+    if (args->convert[0] == '\0') {
+        values[4] = PRICE_USD;
+        err = print_coins(&res, "USD", args->color_enabled);
+    } else {
+        values[4] = PRICE_CON;
+        err = print_coins(&res, args->convert, args->color_enabled);
     }
 
     free(res.data);
-    return 0;
+    return err;
 }
 
