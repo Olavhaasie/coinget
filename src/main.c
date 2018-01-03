@@ -29,7 +29,9 @@ static const char* currencies[] = {
 static int is_available(const char* curr) {
     if (strlen(curr) == 3) {
         for (size_t i = 0; i < CURR_SIZE; i++) {
-            if (strncmp(curr, currencies[i], 3) == 0) {
+            if (toupper(curr[0]) == currencies[i][0]
+                    && toupper(curr[1]) == currencies[i][1]
+                    && toupper(curr[2]) == currencies[i][2]) {
                 return 1;
             }
         }
