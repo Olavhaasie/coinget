@@ -12,13 +12,16 @@
 #define TKN_SIZE 1024
 #define URL_SIZE 256
 
-#define RANK        { "RANK", 8, 6, 0 }
-#define SYMBOL      { "SYMBOL", 6, 8, 0 }
-#define DAY_CHANGE  { " 24H", 26, 10, 1 }
-#define WEEK_CHANGE { " 7D", 28, 10, 1 }
-#define PRICE_USD   { "PRICE (USD)", 10, 12, 0 }
-#define PRICE_CON   { "PRICE", 32, 12, 0 }
+#define RANK        { "RANK", 8, 4, 0, 1 }
+#define SYMBOL      { "SYMBOL", 6, 8, 0, 0 }
+#define DAY_CHANGE  { "24H (%)", 26, 7, 1, 0 }
+#define WEEK_CHANGE { "7D (%)", 28, 7, 1, 0 }
+#define PRICE_USD   { "PRICE (USD)", 10, 12, 0, 0 }
+#define PRICE_CON   { "PRICE", 32, 12, 0, 0 }
 
+#define HOR_SEP "|"
+#define VER_SEP "-"
+#define CROSS_SEP "+"
 
 typedef struct {
     char* data;
@@ -30,6 +33,7 @@ typedef struct {
     size_t offset;
     int padding;
     int use_color;
+    int right_align;
 } column_t;
 
 
@@ -105,19 +109,35 @@ static int parse_json(const result_t* res, jsmntok_t** tokens) {
 }
 
 static int print_coins(const result_t* res, const column_t columns[], size_t size, int color_enabled) {
+    // parse json
     jsmntok_t* tokens = NULL;
     int token_size = parse_json(res, &tokens);
     if (token_size < 0 || tokens == NULL) {
         return -1;
     }
 
+    // print table header
     if (color_enabled) printf(COLOR_YELLOW);
     for (size_t i = 0; i < size; i++) {
-        printf("%-*s", columns[i].padding, columns[i].header);
+        const char* format = columns[i].right_align ? "%*s" : "%-*s";
+        printf(format, columns[i].padding, columns[i].header);
+        if (i < size - 1U) {
+            printf(" " HOR_SEP " ");
+        }
+    }
+    printf("\n");
+    for (size_t i = 0; i < size; i++) {
+        for (int j = 0; j < columns[i].padding; j++) {
+            printf(VER_SEP);
+        }
+        if (i < size - 1U) {
+            printf(VER_SEP CROSS_SEP VER_SEP);
+        }
     }
     if (color_enabled) printf(COLOR_RESET);
     printf("\n");
 
+    // print table rows
     for (int i = 0; i < token_size; i++) {
         if (tokens[i].type == JSMN_OBJECT) {
             for (size_t j = 0; j < size; j++) {
@@ -125,24 +145,23 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
                 char* str = res->data + val->start;
                 int len = val->end - val->start;
                 char* color = "";
+                const char* format = columns[j].right_align ? "%*.*s" : "%-*.*s";
 
-                if (val->type == JSMN_PRIMITIVE && str[0] == 'n') {
-                    str[0] = '-';
-                    len = 1;
-                }
                 if (columns[j].use_color) {
-                    if (str[0] == '-') {
-                        color = COLOR_RED;
-                    } else {
-                        (--str)[0] = ' ';
-                        len++;
-                        color = COLOR_GREEN;
-                    }
+                    color = str[0] == '-' ? COLOR_RED : COLOR_GREEN;
+                }
+                if (val->type == JSMN_PRIMITIVE && str[0] == 'n') {
+                    str[0] = 'x';
+                    len = 1;
+                    color = COLOR_YELLOW;
                 }
 
                 if (color_enabled) printf("%s", color);
-                printf("%-*.*s", columns[j].padding, len, str);
+                printf(format, columns[j].padding, len, str);
                 if (color_enabled) printf(COLOR_RESET);
+                if (j < size - 1U) {
+                    printf(" " HOR_SEP " ");
+                }
             }
             printf("\n");
         }
@@ -179,7 +198,7 @@ int display_result(const arguments* args) {
     }
 
     if (args->convert[0] == '\0') {
-        column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD};
+        column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD };
         err = print_coins(&res, columns, 5, args->color_enabled);
     } else {
         column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_CON };
