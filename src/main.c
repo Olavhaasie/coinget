@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <argp.h>
 #include <string.h>
 
@@ -39,7 +38,7 @@ static int is_available(const char* curr) {
     return 0;
 }
 
-static int parse_opt (int key, char* arg, struct argp_state* state) {
+static int parse_opt(int key, char* arg, struct argp_state* state) {
     arguments* args = state->input;
     long tolong = 0;
     switch (key) {
