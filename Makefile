@@ -20,6 +20,7 @@ MANPAGE = $(TARGET).1
 OS := $(shell uname)
 ifeq ($(OS), Darwin)
     LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn -largp
+    INSTMAN = $(INSTDIR)/share/man/man1
 endif
 
 all: $(TARGET)
