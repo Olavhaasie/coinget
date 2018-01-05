@@ -1,6 +1,5 @@
-CC = gcc
+CC ?= gcc
 TAG = ctags
-RM = rm -f
 
 SRC = $(wildcard src/*.c)
 GIT_VERSION := $(shell git describe --abbrev=0 --tags)
@@ -9,7 +8,7 @@ TARGET = coinget
 JSMNDIR = $(CURDIR)/jsmn
 JSMNLIB = $(JSMNDIR)/libjsmn.a
 
-CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -I$(JSMNDIR) -DVERSION="\"$(TARGET) $(GIT_VERSION)\""
+CFLAGS = -std=c99 -Wall -Werror -pedantic -I$(JSMNDIR) -DVERSION="\"$(TARGET) $(GIT_VERSION)\""
 LDFLAGS = -lcurl -L$(JSMNDIR) -ljsmn
 
 INSTDIR = /usr/local
