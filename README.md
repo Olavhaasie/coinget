@@ -38,10 +38,10 @@ Report bugs or questions to <https://github.com/Olavhaasie/coinget/issues/new>.
 The first two must be downloaded/installed. The JSON library is included as git sub module.
 Also the cryptocurrency information originates from <https://coinmarketcap.com>.
 
-The code was developed on Linux, but will also possibly work on MacOS.
+The code was developed on Linux, but also works on macOS.
 
 ## Install ##
-first clone the repository
+First clone the repository
 
     $ git clone --recursive https://github.com/Olavhaasie/coinget
 
@@ -58,6 +58,12 @@ And now you can run with
 If you want to remove the program you can do
 
     $ sudo make uninstall
+
+###macOS (Homebrew)###
+Homebrew users on macOS can simply tap the [repository](https://github.com/martijncomans/homebrew-coinget) made by Martijn Comans:
+
+    $ brew tap martijncomans/homebrew-coinget
+    $ brew install coinget
 
 ## License ##
 This software is distributed under MIT license 📝
