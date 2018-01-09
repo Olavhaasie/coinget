@@ -59,7 +59,7 @@ If you want to remove the program you can do
 
     $ sudo make uninstall
 
-###macOS (Homebrew)###
+### macOS (Homebrew) ###
 Homebrew users on macOS can simply tap the [repository](https://github.com/martijncomans/homebrew-coinget) made by Martijn Comans:
 
     $ brew tap martijncomans/homebrew-coinget
