@@ -164,6 +164,7 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
                 }
             }
             printf("\n");
+            i += 2 * tokens[i].size;
         }
     }
 
