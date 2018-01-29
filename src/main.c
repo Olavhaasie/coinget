@@ -1,9 +1,9 @@
 #include <argp.h>
-#include <string.h>
 
 #include "coin.h"
 
 #define CURR_SIZE 31
+#define SYM_STEP 10
 
 const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
 const char* argp_program_version = VERSION;
@@ -13,7 +13,7 @@ static struct argp_option options[] = {
         { "start", 's', "NUM", 0, "start displaying from given rank", 0 },
         { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
         { "convert", 'c', "SYM", 0, "display value in currency", 0 },
-        { "coin-id", 'i', "SYM", 0, "display specific crypto, can be used up to 10 times", 0 },
+        { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
         { "no-color", 'n', 0, OPTION_ARG_OPTIONAL, "disable color output", 0 },
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
@@ -70,10 +70,10 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
             break;
         case 'i':
         case ARGP_KEY_ARG:
-            if (args->specific < MAX_SYM) {
-                args->symbol[args->specific] = arg;
-                ++args->specific;
+            if (args->specific != 0 && args->specific % SYM_STEP == 0) {
+                args->symbols = realloc(args->symbols, args->specific + SYM_STEP * sizeof(char*));
             }
+            args->symbols[args->specific++] = arg;
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -93,6 +93,7 @@ int main(int argc, char* argv[]) {
     args.start = 0;
     args.limit = 25;
     args.convert = "";
+    args.symbols = malloc(SYM_STEP * sizeof(char*));
     args.specific = 0;
     args.color_enabled = 1;
 
@@ -102,6 +103,8 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    return display_result(&args);
+    int err = display_result(&args);
+    free(args.symbols);
+    return err;
 }
 

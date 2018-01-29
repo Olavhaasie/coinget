@@ -1,14 +1,13 @@
 #include <stdlib.h>
+#include <string.h>
 #ifndef COIN_H
 #define COIN_H
-
-#define MAX_SYM 10
 
 typedef struct {
     size_t start;
     size_t limit;
     char* convert;
-    char* symbol[MAX_SYM];
+    char** symbols;
     int specific;
     int color_enabled;
 } arguments;

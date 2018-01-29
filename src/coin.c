@@ -1,6 +1,5 @@
 #include "coin.h"
 #include <stdio.h>
-#include <string.h>
 #include <curl/curl.h>
 #include "jsmn.h"
 
@@ -54,7 +53,7 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
     return realSize;
 }
 
-static int get_coins(char url[MAX_SYM][URL_SIZE], size_t urlc, result_t* res) {
+static int get_coins(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
     res->data = malloc(1);
     res->size = 0;
 
@@ -76,7 +75,7 @@ static int get_coins(char url[MAX_SYM][URL_SIZE], size_t urlc, result_t* res) {
                 return -1;
             }
         } else {
-            fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
+            fprintf(stderr, "nope : %s\n%s", curl_easy_strerror(err), url[i]);
             return -1;
         }
     }
@@ -189,21 +188,24 @@ int coin_init() {
 
 int display_result(const arguments* args) {
     result_t res;
-    char urls[MAX_SYM][URL_SIZE];
+    char (* urls)[URL_SIZE];
     size_t urlc = 0;
     if (args->specific) {
+        urls = malloc(args->specific * URL_SIZE * sizeof(char*));
         while (urlc < args->specific) {
             snprintf(urls[urlc], URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
-                args->symbol[urlc], args->convert);
+                args->symbols[urlc], args->convert);
             ++urlc;
         }
     } else {
+        urls = malloc(URL_SIZE * sizeof(char*));
         snprintf(urls[0], URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
                 args->start, args->limit, args->convert);
         urlc = 1;
     }
 
     int err = get_coins(urls, urlc, &res);
+    free(urls);
     if (err) {
         return err;
     }
