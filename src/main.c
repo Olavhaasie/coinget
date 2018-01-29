@@ -71,7 +71,7 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
         case 'i':
         case ARGP_KEY_ARG:
             if (args->specific != 0 && args->specific % SYM_STEP == 0) {
-                args->symbols = realloc(args->symbols, args->specific + SYM_STEP * sizeof(char*));
+                args->symbols = realloc(args->symbols, SYM_STEP * args->specific + SYM_STEP * sizeof(char*));
             }
             args->symbols[args->specific++] = arg;
             break;
