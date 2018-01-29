@@ -103,15 +103,7 @@ static int parse_json(const result_t* res, jsmntok_t** tokens) {
     return size;
 }
 
-static int print_coins(const result_t* res, const column_t columns[], size_t size, int color_enabled) {
-    // parse json
-    jsmntok_t* tokens = NULL;
-    int token_size = parse_json(res, &tokens);
-    if (token_size < 0 || tokens == NULL) {
-        return -1;
-    }
-
-    // print table header
+static void print_header(const column_t columns[], size_t size, int color_enabled) {
     if (color_enabled) printf(COLOR_YELLOW);
     for (size_t i = 0; i < size; i++) {
         const char* format = columns[i].right_align ? "%*s" : "%-*s";
@@ -131,6 +123,17 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
     }
     if (color_enabled) printf(COLOR_RESET);
     printf("\n");
+}
+
+static int print_coins(const result_t* res, const column_t columns[], size_t size, int color_enabled) {
+    // parse json
+    jsmntok_t* tokens = NULL;
+    int token_size = parse_json(res, &tokens);
+    if (token_size < 0 || tokens == NULL) {
+        return -1;
+    }
+
+    print_header(columns, size, color_enabled);
 
     // print table rows
     for (int i = 0; i < token_size; i++) {
