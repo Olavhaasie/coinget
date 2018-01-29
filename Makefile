@@ -2,7 +2,7 @@ CC ?= gcc
 TAG = ctags
 
 SRC = $(wildcard src/*.c)
-GIT_VERSION := $(shell git describe --abbrev=0 --tags)
+GIT_VERSION := $(shell git describe --always)
 TARGET = coinget
 
 JSMNDIR = $(CURDIR)/jsmn
