@@ -25,7 +25,14 @@ Display the values and ranking of your favorite crypto currency in your terminal
     -V, --version              Print program version
 
 The `-c` option only supports AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PKR, PLN, RUB, SEK, SGD, THB, TRY, TWD, ZAR.
-The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum`.
+The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum` and can be used multiple times like:
+
+    $ coinget -i bitcoin -i ethereum
+
+or
+
+    $ coinget bitcoin ethereum ripple
+
 
 ## Bugs ##
 Report bugs or questions to <https://github.com/Olavhaasie/coinget/issues/new>.

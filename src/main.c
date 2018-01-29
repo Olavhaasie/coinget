@@ -10,11 +10,11 @@ const char* argp_program_version = VERSION;
 
 static struct argp_option options[] = {
         { 0, 0, 0, 0, "Program options:", 1},
-        { "start", 's', "NUM", 0, "start displaying from given rank", 0 },
-        { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
-        { "convert", 'c', "SYM", 0, "display value in currency", 0 },
-        { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
-        { "no-color", 'n', 0, 0, "disable color output", 0 },
+        { "start", 's', "NUM", OPTION_ARG_OPTIONAL, "start displaying from given rank", 0 },
+        { "limit", 'l', "NUM", OPTION_ARG_OPTIONAL, "display NUM cryptos", 0 },
+        { "convert", 'c', "SYM", OPTION_ARG_OPTIONAL, "display value in currency", 0 },
+        { "coin-id", 'i', "SYM", OPTION_ARG_OPTIONAL, "display specific crypto, can be used up to 10 times", 0 },
+        { "no-color", 'n', 0, OPTION_ARG_OPTIONAL, "disable color output", 0 },
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
 };
@@ -84,7 +84,12 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, "[CRYPTO ID]", "display cryptocurrency values in terminal", 0, 0, 0 };
+static struct argp argp = { options, parse_opt, "[CRYPTO IDs]",
+    "display cryptocurrency values in terminal\v"
+    "Every trailing argument will be interpreted as a crypto name.\n"
+    "So for example you can chain cryptos:\n"
+    "\t$ coinget bitcoin ethereum ripple",
+    0, 0, 0 };
 
 int main(int argc, char* argv[]) {
     arguments args;
