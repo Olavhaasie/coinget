@@ -53,27 +53,30 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
     return realSize;
 }
 
-static int get_coins(const char* url, result_t* res) {
+static int get_coins(char url[MAX_SYM][URL_SIZE], size_t urlc, result_t* res) {
     CURL* curl = curl_easy_init();
 
     if(curl) {
         res->data = malloc(1);
         res->size = 0;
 
-        curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)res);
 
-        CURLcode err = curl_easy_perform(curl);
+        for (size_t i = 0; i < urlc; i++) {
+            curl_easy_setopt(curl, CURLOPT_URL, url[i]);
+
+            CURLcode err = curl_easy_perform(curl);
+            if(err != CURLE_OK) {
+                fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
+                return -1;
+            }
+        }
 
         curl_easy_cleanup(curl);
 
-        if(err != CURLE_OK) {
-            fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
-            return -1;
-        }
     } else {
         fprintf(stderr, "failed to init curl\n");
         return -2;
@@ -184,16 +187,21 @@ void coin_init() {
 
 int display_result(const arguments* args) {
     result_t res;
-    char url[URL_SIZE];
+    char urls[MAX_SYM][URL_SIZE];
+    size_t urlc = 0;
     if (args->specific) {
-        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
-                args->symbol, args->convert);
+        while (urlc < args->specific) {
+            snprintf(urls[urlc], URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
+                args->symbol[urlc], args->convert);
+            ++urlc;
+        }
     } else {
-        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
+        snprintf(urls[0], URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/?start=%lu&limit=%lu&convert=%s",
                 args->start, args->limit, args->convert);
+        urlc = 1;
     }
 
-    int err = get_coins(url, &res);
+    int err = get_coins(urls, urlc, &res);
     if (err) {
         return err;
     }

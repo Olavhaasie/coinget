@@ -66,16 +66,16 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
             }
             break;
         case 'i':
-            args->symbol = arg;
-            args->specific = 1;
+            if (args->specific < MAX_SYM) {
+                args->symbol[args->specific++] = arg;
+            }
             break;
         case 'n':
             args->color_enabled = 0;
             break;
         case ARGP_KEY_ARG:
-            if (args->specific == 0) {
-                args->symbol = arg;
-                args->specific = 1;
+            if (args->specific < MAX_SYM) {
+                args->symbol[args->specific++] = arg;
             }
             break;
         default:
@@ -91,7 +91,6 @@ int main(int argc, char* argv[]) {
     args.start = 0;
     args.limit = 25;
     args.convert = "";
-    args.symbol = "";
     args.specific = 0;
     args.color_enabled = 1;
 
