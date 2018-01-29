@@ -10,10 +10,10 @@ const char* argp_program_version = VERSION;
 
 static struct argp_option options[] = {
         { 0, 0, 0, 0, "Program options:", 1},
-        { "start", 's', "NUM", OPTION_ARG_OPTIONAL, "start displaying from given rank", 0 },
-        { "limit", 'l', "NUM", OPTION_ARG_OPTIONAL, "display NUM cryptos", 0 },
-        { "convert", 'c', "SYM", OPTION_ARG_OPTIONAL, "display value in currency", 0 },
-        { "coin-id", 'i', "SYM", OPTION_ARG_OPTIONAL, "display specific crypto, can be used up to 10 times", 0 },
+        { "start", 's', "NUM", 0, "start displaying from given rank", 0 },
+        { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
+        { "convert", 'c', "SYM", 0, "display value in currency", 0 },
+        { "coin-id", 'i', "SYM", 0, "display specific crypto, can be used up to 10 times", 0 },
         { "no-color", 'n', 0, OPTION_ARG_OPTIONAL, "disable color output", 0 },
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
@@ -39,7 +39,7 @@ static int is_available(const char* curr) {
 }
 
 static int parse_opt(int key, char* arg, struct argp_state* state) {
-    arguments* args = state->input;
+    arguments* args = (arguments*)state->input;
     long tolong = 0;
     switch (key) {
         case 's':
@@ -65,17 +65,14 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
                 argp_error(state, "invalid currency '%s'", arg);
             }
             break;
-        case 'i':
-            if (args->specific < MAX_SYM) {
-                args->symbol[args->specific++] = arg;
-            }
-            break;
         case 'n':
             args->color_enabled = 0;
             break;
+        case 'i':
         case ARGP_KEY_ARG:
             if (args->specific < MAX_SYM) {
-                args->symbol[args->specific++] = arg;
+                args->symbol[args->specific] = arg;
+                ++args->specific;
             }
             break;
         default:
