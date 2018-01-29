@@ -36,6 +36,7 @@ typedef struct {
     int right_align;
 } column_t;
 
+static CURL* curl;
 
 static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
     const size_t realSize = size * nmemb;
@@ -54,32 +55,30 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
 }
 
 static int get_coins(char url[MAX_SYM][URL_SIZE], size_t urlc, result_t* res) {
-    CURL* curl = curl_easy_init();
+    res->data = malloc(1);
+    res->size = 0;
 
-    if(curl) {
-        res->data = malloc(1);
-        res->size = 0;
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)res);
 
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)res);
+    for (size_t i = 0; i < urlc; i++) {
+        curl_easy_setopt(curl, CURLOPT_URL, url[i]);
 
-        for (size_t i = 0; i < urlc; i++) {
-            curl_easy_setopt(curl, CURLOPT_URL, url[i]);
+        CURLcode err = curl_easy_perform(curl);
 
-            CURLcode err = curl_easy_perform(curl);
-            if(err != CURLE_OK) {
-                fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
+        if(err == CURLE_OK) {
+            long response_code;
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+            if (response_code == 404) {
+                fprintf(stderr, "id not found\n");
                 return -1;
             }
+        } else {
+            fprintf(stderr, "nope : %s\n", curl_easy_strerror(err));
+            return -1;
         }
-
-        curl_easy_cleanup(curl);
-
-    } else {
-        fprintf(stderr, "failed to init curl\n");
-        return -2;
     }
 
     return 0;
@@ -99,13 +98,6 @@ static int parse_json(const result_t* res, jsmntok_t** tokens) {
         free(*tokens);
         fprintf(stderr, "failed to parse json with error code %d\n", size);
         return -1;
-    }
-
-    // check if error returned
-    if (strncmp(res->data + (*tokens)[1].start, "error", 5) == 0) {
-        free(*tokens);
-        fprintf(stderr, "%.*s\n", (*tokens)[2].end - (*tokens)[2].start, res->data + (*tokens)[2].start);
-        return -2;
     }
 
     return size;
@@ -177,12 +169,19 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
 
 static void cleanup() {
     curl_global_cleanup();
+    curl_easy_cleanup(curl);
 }
 
-void coin_init() {
+int coin_init() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if (!curl) {
+        fprintf(stderr, "failed to init libcurl\n");
+        return -1;
+    }
 
     atexit(cleanup);
+    return 0;
 }
 
 int display_result(const arguments* args) {

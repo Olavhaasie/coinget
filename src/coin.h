@@ -13,7 +13,7 @@ typedef struct {
     int color_enabled;
 } arguments;
 
-void coin_init();
+int coin_init();
 
 int display_result(const arguments* args);
 

@@ -101,7 +101,9 @@ int main(int argc, char* argv[]) {
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
-    coin_init();
+    if (coin_init()) {
+        return -1;
+    }
 
     return display_result(&args);
 }
