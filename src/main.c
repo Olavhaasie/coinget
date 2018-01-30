@@ -1,5 +1,6 @@
 #include <argp.h>
 
+#include "util.h"
 #include "coin.h"
 
 #define CURR_SIZE 31
@@ -71,7 +72,7 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
         case 'i':
         case ARGP_KEY_ARG:
             if (args->specific != 0 && args->specific % SYM_STEP == 0) {
-                args->symbols = realloc(args->symbols, SYM_STEP * args->specific + SYM_STEP * sizeof(char*));
+                args->symbols = realloc(args->symbols, SYM_STEP * (args->specific + sizeof(char*)));
             }
             args->symbols[args->specific++] = arg;
             break;
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
-    if (coin_init()) {
+    if (init_curl()) {
         return -1;
     }
 

@@ -1,15 +1,11 @@
 #include "coin.h"
 #include <stdio.h>
-#include <curl/curl.h>
-#include "jsmn.h"
+#include "util.h"
 
 #define COLOR_RED    "\x1b[31m"
 #define COLOR_GREEN  "\x1b[32m"
 #define COLOR_YELLOW "\x1b[33m"
 #define COLOR_RESET  "\x1b[0m"
-
-#define TKN_SIZE 1024
-#define URL_SIZE 256
 
 #define RANK        { "RANK", 8, 4, 0, 1 }
 #define SYMBOL      { "SYMBOL", 6, 8, 0, 0 }
@@ -22,10 +18,6 @@
 #define VER_SEP "-"
 #define CROSS_SEP "+"
 
-typedef struct {
-    char* data;
-    size_t size;
-} result_t;
 
 typedef struct {
     char* header;
@@ -35,72 +27,6 @@ typedef struct {
     int right_align;
 } column_t;
 
-static CURL* curl;
-
-static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
-    const size_t realSize = size * nmemb;
-    result_t* res = (result_t*) userdata;
-    res->data = realloc(res->data, res->size + realSize + 1);
-    if (!res->data) {
-        fprintf(stderr, "out of memory!\n");
-        return 0;
-    }
-
-    memcpy(&(res->data[res->size]), contents, realSize);
-    res->size += realSize;
-    res->data[res->size] = 0;
-
-    return realSize;
-}
-
-static int get_coins(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
-    res->data = malloc(1);
-    res->size = 0;
-
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)res);
-
-    for (size_t i = 0; i < urlc; i++) {
-        curl_easy_setopt(curl, CURLOPT_URL, url[i]);
-
-        CURLcode err = curl_easy_perform(curl);
-
-        if(err == CURLE_OK) {
-            long response_code;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-            if (response_code == 404) {
-                fprintf(stderr, "id not found\n");
-                return -1;
-            }
-        } else {
-            fprintf(stderr, "nope : %s\n%s", curl_easy_strerror(err), url[i]);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-static int parse_json(const result_t* res, jsmntok_t** tokens) {
-    static jsmn_parser parser;
-
-    jsmn_init(&parser);
-    *tokens = malloc(sizeof(jsmntok_t) * TKN_SIZE);
-    size_t count = 1;
-    int size;
-    while ((size = jsmn_parse(&parser, res->data, res->size, *tokens, count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
-        *tokens = realloc(*tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
-    }
-    if (size < 0) {
-        free(*tokens);
-        fprintf(stderr, "failed to parse json with error code %d\n", size);
-        return -1;
-    }
-
-    return size;
-}
 
 static void print_header(const column_t columns[], size_t size, int color_enabled) {
     if (color_enabled) printf(COLOR_YELLOW);
@@ -169,23 +95,6 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
     return 0;
 }
 
-static void cleanup() {
-    curl_global_cleanup();
-    curl_easy_cleanup(curl);
-}
-
-int coin_init() {
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
-    if (!curl) {
-        fprintf(stderr, "failed to init libcurl\n");
-        return -1;
-    }
-
-    atexit(cleanup);
-    return 0;
-}
-
 int display_result(const arguments* args) {
     result_t res;
     char (* urls)[URL_SIZE];
@@ -204,7 +113,7 @@ int display_result(const arguments* args) {
         urlc = 1;
     }
 
-    int err = get_coins(urls, urlc, &res);
+    int err = request(urls, urlc, &res);
     free(urls);
     if (err) {
         return err;

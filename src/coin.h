@@ -12,8 +12,6 @@ typedef struct {
     int color_enabled;
 } arguments;
 
-int coin_init();
-
 int display_result(const arguments* args);
 
 #endif
