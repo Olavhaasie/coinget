@@ -119,7 +119,7 @@ int display_result(const arguments* args) {
         return err;
     }
 
-    if (args->convert[0] == '\0') {
+    if (!args->convert) {
         column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD };
         err = print_coins(&res, columns, 5, args->color_enabled);
     } else {

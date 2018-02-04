@@ -6,10 +6,12 @@
 #define TKN_SIZE 1024
 
 static CURL* curl;
+static int initialized = 0;
 
 static void cleanup() {
     curl_global_cleanup();
     curl_easy_cleanup(curl);
+    initialized = 0;
 }
 
 static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
@@ -29,6 +31,10 @@ static size_t get_callback(void* contents, size_t size, size_t nmemb, void* user
 }
 
 int init_curl() {
+    if (initialized) {
+        return 0;
+    }
+
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
     if (!curl) {
@@ -40,10 +46,15 @@ int init_curl() {
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_callback);
 
     atexit(cleanup);
+    initialized = 1;
     return 0;
 }
 
 int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
+    if (!initialized && init_curl()) {
+        return -1;
+    }
+
     res->data = malloc(1);
     res->size = 0;
 

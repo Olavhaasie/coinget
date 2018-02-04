@@ -93,16 +93,12 @@ int main(int argc, char* argv[]) {
     arguments args;
     args.start = 0;
     args.limit = 25;
-    args.convert = "";
+    args.convert = NULL;
     args.symbols = malloc(SYM_STEP * sizeof(char*));
     args.specific = 0;
     args.color_enabled = 1;
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
-
-    if (init_curl()) {
-        return -1;
-    }
 
     int err = display_result(&args);
     free(args.symbols);
