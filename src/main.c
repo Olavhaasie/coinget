@@ -71,7 +71,9 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
             break;
         case 'i':
         case ARGP_KEY_ARG:
-            if (args->specific != 0 && args->specific % SYM_STEP == 0) {
+            if (args->specific == 0) {
+                args->symbols = malloc(SYM_STEP * sizeof(char*));
+            } else if (args->specific % SYM_STEP == 0) {
                 args->symbols = realloc(args->symbols, SYM_STEP * (args->specific + sizeof(char*)));
             }
             args->symbols[args->specific++] = arg;
@@ -94,7 +96,7 @@ int main(int argc, char* argv[]) {
     args.start = 0;
     args.limit = 25;
     args.convert = NULL;
-    args.symbols = malloc(SYM_STEP * sizeof(char*));
+    args.symbols = NULL;
     args.specific = 0;
     args.color_enabled = 1;
 

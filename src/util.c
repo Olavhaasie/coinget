@@ -55,7 +55,7 @@ int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
         return -1;
     }
 
-    res->data = malloc(1);
+    res->data = NULL;
     res->size = 0;
 
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)res);
@@ -69,6 +69,8 @@ int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
             long response_code;
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
             if (response_code == 404) {
+                free(res->data);
+                res->size = 0;
                 fprintf(stderr, "id not found\n");
                 return -1;
             }

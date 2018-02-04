@@ -19,7 +19,7 @@ int init_curl();
 
 /**
  * Make multiple http GET requests and store them.
- * Function will allocate memory for res.
+ * Function will allocate memory for res if result is 0.
  *
  * @param url  pointer to array of strings
  * @param urlc number of given urls
