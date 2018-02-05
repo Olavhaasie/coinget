@@ -1,17 +1,18 @@
 .\" manpage for coinget
-.TH COINGET 1 "Januari 2018" "" "coinget man page"
+.TH COINGET 1 "2018" "" "coinget man page"
 .SH NAME
 coinget \- display values and ranking of your favorite cryptos in terminal
 
 .SH SYNOPSIS
 .B coinget
-[\fB\-?V\fR]
+[\fB\-gn?V\fR]
 [\fB\-c\fR \fISYM\fR]
 [\fB\-i\fR \fISYM\fR]
 [\fB\-l\fR \fINUM\fR]
 [\fB\-s\fR \fINUM\fR]
 [\fB\-\-convert\fR \fISYM\fR]
 [\fB\-\-coin-id\fR  \fISYM\fR]
+[\fB\-\-global\fR]
 [\fB\-\-limit\fR \fINUM\fR]
 [\fB\-\-start\fR \fINUM\fR]
 [\fB\-\-help\fR]
@@ -35,6 +36,11 @@ Available values are AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF,
 Display a specific crypto.
 This argument can be given multiple times to display multiple specific cryptos.
 Default is none.
+
+.TP
+.BR \-g ", " \-\-global
+Display global information about the cryptocurrency market such as total marketcap and active cryptos.
+This argument can be combined with the '--convert' option to display marketcap in another currency.
 
 .TP
 .BR \-l ", " \-\-limit =\fINUM\fR " [25]"
