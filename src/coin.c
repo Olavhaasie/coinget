@@ -7,17 +7,18 @@
 #define COLOR_YELLOW "\x1b[33m"
 #define COLOR_RESET  "\x1b[0m"
 
-#define RANK        { "RANK", 8, 4, 0, 1 }
-#define SYMBOL      { "SYMBOL", 6, 8, 0, 0 }
-#define DAY_CHANGE  { "24H (%)", 26, 7, 1, 0 }
-#define WEEK_CHANGE { "7D (%)", 28, 7, 1, 0 }
-#define PRICE_USD   { "PRICE (USD)", 10, 12, 0, 0 }
-#define PRICE_CON   { "PRICE", 32, 12, 0, 0 }
+#define RANK        { "RANK", 8, 4, 0, 1, 0 }
+#define SYMBOL      { "SYMBOL", 6, 8, 0, 0, 0 }
+#define DAY_CHANGE  { "24H (%)", 26, 7, 1, 0, 1 }
+#define WEEK_CHANGE { "7D (%)", 28, 7, 1, 0, 1 }
+#define PRICE_USD   { "PRICE (USD)", 10, 12, 0, 0, 1 }
+#define PRICE_CON   { "PRICE", 32, 12, 0, 0, 1 }
 
 #define HOR_SEP "|"
 #define VER_SEP "-"
 #define CROSS_SEP "+"
 
+static int color_enabled = 1;
 
 typedef struct {
     char* header;
@@ -25,10 +26,11 @@ typedef struct {
     int padding;
     int use_color;
     int right_align;
+    int is_number;
 } column_t;
 
 
-static void print_header(const column_t columns[], size_t size, int color_enabled) {
+static void print_header(const column_t columns[], size_t size) {
     if (color_enabled) printf(COLOR_YELLOW);
     for (size_t i = 0; i < size; i++) {
         const char* format = columns[i].right_align ? "%*s" : "%-*s";
@@ -50,7 +52,7 @@ static void print_header(const column_t columns[], size_t size, int color_enable
     printf("\n");
 }
 
-static int print_coins(const result_t* res, const column_t columns[], size_t size, int color_enabled) {
+static int print_coins(const result_t* res, const column_t columns[], size_t size) {
     // parse json
     jsmntok_t* tokens = NULL;
     int token_size = parse_json(res, &tokens);
@@ -58,7 +60,7 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
         return -1;
     }
 
-    print_header(columns, size, color_enabled);
+    print_header(columns, size);
 
     // print table rows
     for (int i = 0; i < token_size; i++) {
@@ -69,6 +71,7 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
                 int len = val->end - val->start;
                 char* color = "";
                 const char* format = columns[j].right_align ? "%*.*s" : "%-*.*s";
+                const char* nformat = columns[j].right_align ? "%*.2f" : "%-*.2f";
 
                 if (columns[j].use_color) {
                     color = str[0] == '-' ? COLOR_RED : COLOR_GREEN;
@@ -79,8 +82,14 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
                     color = COLOR_YELLOW;
                 }
 
+                double number = columns[j].is_number ? atof(str) : 0.0;
+
                 if (color_enabled) printf("%s", color);
-                printf(format, columns[j].padding, len, str);
+                if (number) {
+                    printf(nformat, columns[j].padding, number);
+                } else {
+                    printf(format, columns[j].padding, len, str);
+                }
                 if (color_enabled) printf(COLOR_RESET);
                 if (j < size - 1U) {
                     printf(" " HOR_SEP " ");
@@ -96,6 +105,7 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
 }
 
 int display_result(const arguments* args) {
+    color_enabled = args->color_enabled;
     result_t res;
     char (* urls)[URL_SIZE];
     size_t urlc = 0;
@@ -121,14 +131,14 @@ int display_result(const arguments* args) {
 
     if (!args->convert) {
         column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_USD };
-        err = print_coins(&res, columns, 5, args->color_enabled);
+        err = print_coins(&res, columns, 5);
     } else {
         column_t columns[] = { RANK, SYMBOL, DAY_CHANGE, WEEK_CHANGE, PRICE_CON };
         char header[16];
         snprintf(header, 16, "PRICE (%s)", args->convert);
         columns[4].header = header;
 
-        err = print_coins(&res, columns, 5, args->color_enabled);
+        err = print_coins(&res, columns, 5);
     }
 
     free(res.data);
