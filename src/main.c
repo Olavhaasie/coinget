@@ -26,12 +26,15 @@ static const char* currencies[] = {
     "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
     "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
 
-static int is_available(const char* curr) {
+static int is_available(char* curr) {
     if (strlen(curr) == 3) {
+        curr[0] = toupper(curr[0]);
+        curr[1] = toupper(curr[1]);
+        curr[2] = toupper(curr[2]);
         for (size_t i = 0; i < CURR_SIZE; i++) {
-            if (toupper(curr[0]) == currencies[i][0]
-                    && toupper(curr[1]) == currencies[i][1]
-                    && toupper(curr[2]) == currencies[i][2]) {
+            if (curr[0] == currencies[i][0]
+                    && curr[1] == currencies[i][1]
+                    && curr[2] == currencies[i][2]) {
                 return 1;
             }
         }
