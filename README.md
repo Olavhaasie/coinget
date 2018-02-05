@@ -9,7 +9,9 @@
 
 Display the values and ranking of your favorite crypto currency in your terminal.💸
 
-![example](doc/output.png "Sample output")
+![example1](doc/output.png "Sample output")![example2](doc/output-global.png "Sample global output")
+
+[![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/blob/master/LICENSE)
 
 ## Help ##
     Program options:
