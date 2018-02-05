@@ -1,11 +1,13 @@
 #include "coin.h"
 #include <stdio.h>
+#include <time.h>
 #include "util.h"
 
-#define COLOR_RED    "\x1b[31m"
-#define COLOR_GREEN  "\x1b[32m"
-#define COLOR_YELLOW "\x1b[33m"
-#define COLOR_RESET  "\x1b[0m"
+#define COLOR_RED     "\x1b[31m"
+#define COLOR_GREEN   "\x1b[32m"
+#define COLOR_YELLOW  "\x1b[33m"
+#define COLOR_RESET   "\x1b[0m"
+#define COLOR_BYELLOW "\033[1m\033[33m"
 
 #define RANK        { "RANK", 8, 4, 0, 1, 0 }
 #define SYMBOL      { "SYMBOL", 6, 8, 0, 0, 0 }
@@ -143,5 +145,60 @@ int display_result(const arguments* args) {
 
     free(res.data);
     return err;
+}
+
+int display_global(const arguments* args) {
+    color_enabled = args->color_enabled;
+    char url[URL_SIZE];
+    if (args->convert) {
+        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/global?convert=%s",
+                args->convert);
+    } else {
+        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/global");
+    }
+
+    result_t res;
+    if (request(&url, 1, &res)) {
+        return -1;
+    }
+
+    jsmntok_t* tokens;
+    parse_json(&res, &tokens);
+
+    size_t cur_offset = args->convert ? 16 : 2;
+
+    if (color_enabled) printf(COLOR_BYELLOW);
+    printf("total marketcap (%3s) | ", args->convert ? args->convert : "USD");
+    if (color_enabled) printf(COLOR_RESET);
+
+    printf("%.*s (%.*s%% BTC)\n",
+            tokens[cur_offset].end - tokens[cur_offset].start, res.data + tokens[cur_offset].start,
+            tokens[6].end - tokens[6].start, res.data + tokens[6].start);
+
+    if (color_enabled) printf(COLOR_BYELLOW);
+    printf("active currencies     | ");
+    if (color_enabled) printf(COLOR_RESET);
+
+    printf("%.*s\n", tokens[8].end - tokens[8].start, res.data + tokens[8].start);
+
+    if (color_enabled) printf(COLOR_BYELLOW);
+    printf("active markets        | ");
+    if (color_enabled) printf(COLOR_RESET);
+
+    printf("%.*s\n", tokens[12].end - tokens[12].start, res.data + tokens[12].start);
+
+    if (color_enabled) printf(COLOR_BYELLOW);
+    printf("timestamp             | ");
+    if (color_enabled) printf(COLOR_RESET);
+
+    time_t time = (time_t) atol(res.data + tokens[14].start);
+    struct tm* tm = localtime(&time);
+    char date[20];
+    strftime(date, sizeof(date), "%b %d %Y %H:%M", tm);
+    printf("%s\n", date);
+
+    free(tokens);
+    free(res.data);
+    return 0;
 }
 

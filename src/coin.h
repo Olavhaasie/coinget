@@ -9,10 +9,13 @@ typedef struct {
     char* convert;
     char** symbols;
     int specific;
+    int global;
     int color_enabled;
 } arguments;
 
 int display_result(const arguments* args);
+
+int display_global(const arguments* args);
 
 #endif
 

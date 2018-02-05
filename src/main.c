@@ -15,6 +15,7 @@ static struct argp_option options[] = {
         { "limit", 'l', "NUM", 0, "display NUM cryptos", 0 },
         { "convert", 'c', "SYM", 0, "display value in currency", 0 },
         { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
+        { "global", 'g', 0, OPTION_ARG_OPTIONAL, "display global crypto information", 0 },
         { "no-color", 'n', 0, OPTION_ARG_OPTIONAL, "disable color output", 0 },
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
@@ -72,6 +73,9 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
         case 'n':
             args->color_enabled = 0;
             break;
+        case 'g':
+            args->global = 1;
+            break;
         case 'i':
         case ARGP_KEY_ARG:
             if (args->specific == 0) {
@@ -101,11 +105,17 @@ int main(int argc, char* argv[]) {
     args.convert = NULL;
     args.symbols = NULL;
     args.specific = 0;
+    args.global = 0;
     args.color_enabled = 1;
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
-    int err = display_result(&args);
+    int err;
+    if (args.global) {
+        err = display_global(&args);
+    } else {
+        err = display_result(&args);
+    }
     free(args.symbols);
     return err;
 }
