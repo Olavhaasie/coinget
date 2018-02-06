@@ -1,5 +1,6 @@
 #include "coin.h"
 #include <stdio.h>
+#include <stdarg.h>
 #include <time.h>
 #include "util.h"
 
@@ -7,7 +8,7 @@
 #define COLOR_GREEN   "\x1b[32m"
 #define COLOR_YELLOW  "\x1b[33m"
 #define COLOR_RESET   "\x1b[0m"
-#define COLOR_BYELLOW "\033[1m\033[33m"
+#define COLOR_BYELLOW "\x1b[33;1m"
 
 #define RANK        { "RANK", 8, 4, 0, 1, 0 }
 #define SYMBOL      { "SYMBOL", 6, 8, 0, 0, 0 }
@@ -31,6 +32,18 @@ typedef struct {
     int is_number;
 } column_t;
 
+static void cprintf(const char* color, const char* format, ...) {
+    if (color_enabled) {
+        printf("%s", color);
+    }
+    va_list vl;
+    va_start(vl, format);
+    vprintf(format, vl);
+    va_end(vl);
+    if (color_enabled) {
+        printf(COLOR_RESET);
+    }
+}
 
 static void print_header(const column_t columns[], size_t size) {
     if (color_enabled) printf(COLOR_YELLOW);
@@ -86,13 +99,11 @@ static int print_coins(const result_t* res, const column_t columns[], size_t siz
 
                 double number = columns[j].is_number ? atof(str) : 0.0;
 
-                if (color_enabled) printf("%s", color);
                 if (number) {
-                    printf(nformat, columns[j].padding, number);
+                    cprintf(color, nformat, columns[j].padding, number);
                 } else {
-                    printf(format, columns[j].padding, len, str);
+                    cprintf(color, format, columns[j].padding, len, str);
                 }
-                if (color_enabled) printf(COLOR_RESET);
                 if (j < size - 1U) {
                     printf(" " HOR_SEP " ");
                 }
@@ -167,29 +178,21 @@ int display_global(const arguments* args) {
 
     size_t cur_offset = args->convert ? 16 : 2;
 
-    if (color_enabled) printf(COLOR_BYELLOW);
-    printf("total marketcap (%3s) | ", args->convert ? args->convert : "USD");
-    if (color_enabled) printf(COLOR_RESET);
+    cprintf(COLOR_BYELLOW, "total marketcap (%3s) | ", args->convert ? args->convert : "USD");
 
     printf("%.*s (%.*s%% BTC)\n",
             tokens[cur_offset].end - tokens[cur_offset].start, res.data + tokens[cur_offset].start,
             tokens[6].end - tokens[6].start, res.data + tokens[6].start);
 
-    if (color_enabled) printf(COLOR_BYELLOW);
-    printf("active currencies     | ");
-    if (color_enabled) printf(COLOR_RESET);
+    cprintf(COLOR_BYELLOW, "active currencies     | ");
 
     printf("%.*s\n", tokens[8].end - tokens[8].start, res.data + tokens[8].start);
 
-    if (color_enabled) printf(COLOR_BYELLOW);
-    printf("active markets        | ");
-    if (color_enabled) printf(COLOR_RESET);
+    cprintf(COLOR_BYELLOW, "active markets        | ");
 
     printf("%.*s\n", tokens[12].end - tokens[12].start, res.data + tokens[12].start);
 
-    if (color_enabled) printf(COLOR_BYELLOW);
-    printf("timestamp             | ");
-    if (color_enabled) printf(COLOR_RESET);
+    cprintf(COLOR_BYELLOW, "timestamp             | ");
 
     time_t time = (time_t) atol(res.data + tokens[14].start);
     struct tm* tm = localtime(&time);
