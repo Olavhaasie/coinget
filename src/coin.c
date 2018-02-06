@@ -213,27 +213,30 @@ int display_portfolio(const char* filename) {
     }
 
     column_t columns[] = {
-        { "", 0, 15, 0, 0, 0 },
+        { "", 0, 8, 0, 0, 0 },
         { "AMOUNT", 0, 14, 0, 1, 0 },
         { "PRICE", 0, 10, 0, 1, 0 },
         { "INVEST", 0, 10, 0, 1, 0 },
         { "WORTH", 0, 10, 0, 1, 0 },
         { "PROFIT", 0, 10, 0, 1, 0 },
     };
-    print_header(columns, 6);
 
-    char name[64];
-    double amount;
-    char convert[4];
-    double invest;
-    while (fscanf(fp, "%64s %lf %4s %lf", name, &amount, convert, &invest) == 4) {
+    char name[64], convert[4];
+    double amount, invest, total_invest = 0, total_worth = 0, total_profit = 0;
+    if (fscanf(fp, "%3s", convert) != 1) {
+        fprintf(stderr, "first line in portfolio should be convert currency\n");
+        return -1;
+    }
+    if (!is_available(convert)) {
+        fprintf(stderr, "invalid currency '%s'\n", convert);
+        return -1;
+    }
+
+    print_header(columns, 6);
+    while (fscanf(fp, "%64s %lf %lf", name, &amount, &invest) == 3) {
         char url[URL_SIZE];
         snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
                 name, convert);
-
-        if (!is_available(convert)) {
-            continue;
-        }
 
         result_t res;
         if (request(&url, 1, &res)) {
@@ -243,8 +246,8 @@ int display_portfolio(const char* filename) {
         jsmntok_t* tokens;
         parse_json(&res, &tokens);
 
-        cprintf(COLOR_BYELLOW, "%*.*s -> %3s " HOR_SEP " ",
-                8, tokens[7].end - tokens[7].start, res.data + tokens[7].start, convert);
+        cprintf(COLOR_BYELLOW, "%*.*s " HOR_SEP " ",
+                8, tokens[7].end - tokens[7].start, res.data + tokens[7].start);
 
         size_t convert_offset = convert[0] == 'U' ? 11 : 33;
         double current_price = atof(res.data + tokens[convert_offset].start);
@@ -252,9 +255,11 @@ int display_portfolio(const char* filename) {
         printf("%*.*f " HOR_SEP " ", 14, 8, amount);
         printf("%*.2f " HOR_SEP " ", 10, current_price);
         printf("%*.2f " HOR_SEP " ", 10, invest);
+        total_invest += invest;
 
         double worth = amount * current_price;
         printf("%*.2f " HOR_SEP " ", 10, worth);
+        total_worth += worth;
 
         double profit = worth - invest;
         if (profit > 0.0) {
@@ -262,11 +267,20 @@ int display_portfolio(const char* filename) {
         } else {
             cprintf(COLOR_RED, "%*.2f ", 10, profit);
         }
+        total_profit += profit;
         printf("\n");
 
         free(tokens);
         free(res.data);
     }
+    cprintf(COLOR_BYELLOW, "%*s " HOR_SEP " ", columns[0].padding, "TOTAL");
+    printf("%*c%*.2f " HOR_SEP " %*.2f " HOR_SEP " ", 30, ' ', columns[3].padding, total_invest, columns[4].padding, total_worth);
+    if (total_profit > 0.0) {
+        cprintf(COLOR_GREEN, "%*.2f", columns[5].padding, total_profit);
+    } else {
+        cprintf(COLOR_RED, "%*.2f", columns[5].padding, total_profit);
+    }
+    printf("\n");
 
     fclose(fp);
     return 0;
