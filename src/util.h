@@ -18,6 +18,15 @@ typedef struct {
 int init_curl();
 
 /**
+ * Checks if given currency string is an available currency to convert to.
+ * If the string is of size 3 every character will be converted to upper case.
+ *
+ * @param currency string to check
+ * @return 1 if the given currency is available, 0 otherwise
+ */
+int is_available(char* currency);
+
+/**
  * Make multiple http GET requests and store them.
  * Function will allocate memory for res if result is 0.
  *

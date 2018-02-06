@@ -3,7 +3,6 @@
 #include "util.h"
 #include "coin.h"
 
-#define CURR_SIZE 31
 #define SYM_STEP 10
 
 const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
@@ -20,28 +19,6 @@ static struct argp_option options[] = {
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
 };
-
-static const char* currencies[] = {
-    "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK",
-    "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY",
-    "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
-    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
-
-static int is_available(char* curr) {
-    if (strlen(curr) == 3) {
-        curr[0] = toupper(curr[0]);
-        curr[1] = toupper(curr[1]);
-        curr[2] = toupper(curr[2]);
-        for (size_t i = 0; i < CURR_SIZE; i++) {
-            if (curr[0] == currencies[i][0]
-                    && curr[1] == currencies[i][1]
-                    && curr[2] == currencies[i][2]) {
-                return 1;
-            }
-        }
-    }
-    return 0;
-}
 
 static int parse_opt(int key, char* arg, struct argp_state* state) {
     arguments* args = (arguments*)state->input;

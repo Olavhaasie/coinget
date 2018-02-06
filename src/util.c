@@ -2,11 +2,19 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #define TKN_SIZE 1024
+#define CURR_SIZE 31
 
 static CURL* curl;
 static int initialized = 0;
+
+static const char* currencies[] = {
+    "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK",
+    "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY",
+    "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
+    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
 
 static void cleanup() {
     curl_global_cleanup();
@@ -47,6 +55,22 @@ int init_curl() {
 
     atexit(cleanup);
     initialized = 1;
+    return 0;
+}
+
+int is_available(char* curr) {
+    if (strlen(curr) == 3) {
+        curr[0] = toupper(curr[0]);
+        curr[1] = toupper(curr[1]);
+        curr[2] = toupper(curr[2]);
+        for (size_t i = 0; i < CURR_SIZE; i++) {
+            if (curr[0] == currencies[i][0]
+                    && curr[1] == currencies[i][1]
+                    && curr[2] == currencies[i][2]) {
+                return 1;
+            }
+        }
+    }
     return 0;
 }
 
