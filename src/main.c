@@ -15,6 +15,7 @@ static struct argp_option options[] = {
         { "convert", 'c', "SYM", 0, "display value in currency", 0 },
         { "coin-id", 'i', "SYM", 0, "display specific crypto", 0 },
         { "global", 'g', 0, OPTION_ARG_OPTIONAL, "display global crypto information", 0 },
+        { "portfolio", 'p', "file", 0, "use given portofolio file", 0},
         { "no-color", 'n', 0, OPTION_ARG_OPTIONAL, "disable color output", 0 },
         { 0, 0, 0, 0, "Informational options:", 0},
         { 0 }
@@ -46,6 +47,9 @@ static int parse_opt(int key, char* arg, struct argp_state* state) {
             } else {
                 argp_error(state, "invalid currency '%s'", arg);
             }
+            break;
+        case 'p':
+            args->portfolio = arg;
             break;
         case 'n':
             args->color_enabled = 0;
@@ -83,6 +87,7 @@ int main(int argc, char* argv[]) {
     args.symbols = NULL;
     args.specific = 0;
     args.global = 0;
+    args.portfolio = NULL;
     args.color_enabled = 1;
 
     argp_parse(&argp, argc, argv, 0, 0, &args);
@@ -90,9 +95,12 @@ int main(int argc, char* argv[]) {
     int err;
     if (args.global) {
         err = display_global(&args);
+    } else if (args.portfolio) {
+        err = display_portfolio(args.portfolio);
     } else {
         err = display_result(&args);
     }
+
     free(args.symbols);
     return err;
 }

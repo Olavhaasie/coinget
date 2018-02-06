@@ -12,10 +12,10 @@
 
 #define RANK        { "RANK", 8, 4, 0, 1, 0 }
 #define SYMBOL      { "SYMBOL", 6, 8, 0, 0, 0 }
-#define DAY_CHANGE  { "24H (%)", 26, 7, 1, 0, 1 }
-#define WEEK_CHANGE { "7D (%)", 28, 7, 1, 0, 1 }
-#define PRICE_USD   { "PRICE (USD)", 10, 12, 0, 0, 1 }
-#define PRICE_CON   { "PRICE", 32, 12, 0, 0, 1 }
+#define DAY_CHANGE  { "24H (%)", 26, 7, 1, 1, 1 }
+#define WEEK_CHANGE { "7D (%)", 28, 7, 1, 1, 1 }
+#define PRICE_USD   { "PRICE (USD)", 10, 12, 0, 1, 1 }
+#define PRICE_CON   { "PRICE", 32, 12, 0, 1, 1 }
 
 #define HOR_SEP "|"
 #define VER_SEP "-"
@@ -46,21 +46,21 @@ static void cprintf(const char* color, const char* format, ...) {
 }
 
 static void print_header(const column_t columns[], size_t size) {
-    if (color_enabled) printf(COLOR_YELLOW);
+    if (color_enabled) printf(COLOR_BYELLOW);
     for (size_t i = 0; i < size; i++) {
-        const char* format = columns[i].right_align ? "%*s" : "%-*s";
+        const char* format = columns[i].right_align ? "%*s " : "%-*s ";
         printf(format, columns[i].padding, columns[i].header);
         if (i < size - 1U) {
-            printf(" " HOR_SEP " ");
+            printf(HOR_SEP " ");
         }
     }
     printf("\n");
     for (size_t i = 0; i < size; i++) {
-        for (int j = 0; j < columns[i].padding; j++) {
+        for (int j = 0; j < columns[i].padding + 1; j++) {
             printf(VER_SEP);
         }
         if (i < size - 1U) {
-            printf(VER_SEP CROSS_SEP VER_SEP);
+            printf(CROSS_SEP VER_SEP);
         }
     }
     if (color_enabled) printf(COLOR_RESET);
@@ -202,6 +202,73 @@ int display_global(const arguments* args) {
 
     free(tokens);
     free(res.data);
+    return 0;
+}
+
+int display_portfolio(const char* filename) {
+    FILE* fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "failed to open %s\n", filename);
+        return -1;
+    }
+
+    column_t columns[] = {
+        { "", 0, 15, 0, 0, 0 },
+        { "AMOUNT", 0, 14, 0, 1, 0 },
+        { "PRICE", 0, 10, 0, 1, 0 },
+        { "INVEST", 0, 10, 0, 1, 0 },
+        { "WORTH", 0, 10, 0, 1, 0 },
+        { "PROFIT", 0, 10, 0, 1, 0 },
+    };
+    print_header(columns, 6);
+
+    char name[64];
+    double amount;
+    char convert[4];
+    double invest;
+    while (fscanf(fp, "%64s %lf %4s %lf", name, &amount, convert, &invest) == 4) {
+        char url[URL_SIZE];
+        snprintf(url, URL_SIZE, "https://api.coinmarketcap.com/v1/ticker/%s/?convert=%s",
+                name, convert);
+
+        if (!is_available(convert)) {
+            continue;
+        }
+
+        result_t res;
+        if (request(&url, 1, &res)) {
+            return -1;
+        }
+
+        jsmntok_t* tokens;
+        parse_json(&res, &tokens);
+
+        cprintf(COLOR_BYELLOW, "%*.*s -> %3s " HOR_SEP " ",
+                8, tokens[7].end - tokens[7].start, res.data + tokens[7].start, convert);
+
+        size_t convert_offset = convert[0] == 'U' ? 33 : 11;
+        double current_price = atof(res.data + tokens[convert_offset].start);
+
+        printf("%*.*f " HOR_SEP " ", 14, 8, amount);
+        printf("%*.2f " HOR_SEP " ", 10, current_price);
+        printf("%*.2f " HOR_SEP " ", 10, invest);
+
+        double worth = amount * current_price;
+        printf("%*.2f " HOR_SEP " ", 10, worth);
+
+        double profit = worth - invest;
+        if (profit > 0.0) {
+            cprintf(COLOR_GREEN, "%*.2f ", 10, profit);
+        } else {
+            cprintf(COLOR_RED, "%*.2f ", 10, profit);
+        }
+        printf("\n");
+
+        free(tokens);
+        free(res.data);
+    }
+
+    fclose(fp);
     return 0;
 }
 

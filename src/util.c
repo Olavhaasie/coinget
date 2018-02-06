@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 #define TKN_SIZE 1024
-#define CURR_SIZE 31
+#define CURR_SIZE 32
 
 static CURL* curl;
 static int initialized = 0;
@@ -14,7 +14,7 @@ static const char* currencies[] = {
     "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK",
     "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY",
     "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
-    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR" };
+    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "USD", "ZAR" };
 
 static void cleanup() {
     curl_global_cleanup();
