@@ -246,7 +246,7 @@ int display_portfolio(const char* filename) {
         cprintf(COLOR_BYELLOW, "%*.*s -> %3s " HOR_SEP " ",
                 8, tokens[7].end - tokens[7].start, res.data + tokens[7].start, convert);
 
-        size_t convert_offset = convert[0] == 'U' ? 33 : 11;
+        size_t convert_offset = convert[0] == 'U' ? 11 : 33;
         double current_price = atof(res.data + tokens[convert_offset].start);
 
         printf("%*.*f " HOR_SEP " ", 14, 8, amount);
