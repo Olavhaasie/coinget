@@ -43,7 +43,7 @@ static int list_parse_opt(int key, char* arg, struct argp_state* state) {
     switch (key) {
         case 's':
             tolong = atol(arg);
-            if (tolong <= 0) {
+            if (tolong < 0) {
                 argp_error(state, "argument must be positive integer");
             } else {
                 args->start = tolong - 1;
@@ -51,7 +51,7 @@ static int list_parse_opt(int key, char* arg, struct argp_state* state) {
             break;
         case 'l':
             tolong = atol(arg);
-            if (tolong <= 0) {
+            if (tolong < 0) {
                 argp_error(state, "argument must be positive integer");
             } else {
                 args->limit = tolong;
