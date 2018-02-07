@@ -191,6 +191,7 @@ int main(int argc, char* argv[]) {
 
     if (argc < 2) {
         argp_help(&global_argp, stdout, ARGP_HELP_SEE, "coinget");
+        return 0;
     }
 
     argp_parse(&global_argp, argc, argv, ARGP_IN_ORDER, 0, &args);
