@@ -41,14 +41,18 @@ The `-c` option only supports AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, 
 The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum`.
 
 ### Portfolio ###
-The portfolio file must be specified after the `portfolio` command or using the `-p` option.
+Coinget automatically looks for a `.coins` file in your home directory if no file was given using the `portfolio` subcommand.
+If the file does not exist, it must be specified after the `portfolio` command or using the `-p` option.
+
 The first line of this file must contain a currency (same as for `-c` option).
 The next lines must be space separated values containing the crypto id, the amount of coins and the investment in the given currency.
 So for example:
 
     EUR
-    bitcoin 0.001 100
-    ripple 20 15.70
+    bitcoin 1.0001 100
+    ripple 20.2 20
+    litecoin 20 20
+    garlicoin 0.1 0.01
 
 ### Examples ###
 
@@ -56,7 +60,7 @@ So for example:
 | ----------------------------- | ------------------------------------------------------- |
 | `coinget list -l 100 -c EUR`  | list top 100 coins with prices in euros                 |
 | `coinget list -l 0`           | list all coins on the market in USD                     |
-| `coinget list -s 1000`        | list all coins with rank higher than 1000               |
+| `coinget list -s 1000 -l 10`  | list 10 coins with rank lower than 1000                 |
 | `coinget list bitcoin ripple` | list values of bitcoin and ripple                       |
 | `coinget stats -c AUD`        | list global market stats converted to AUD               |
 | `coinget portfolio coins`     | list your own investments and profits from file _coins_ |
