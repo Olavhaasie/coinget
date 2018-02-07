@@ -9,17 +9,27 @@
 
 Display the values and ranking of your favorite crypto currency in your terminal.💸
 
-![example1](doc/output.png "Sample output")![example2](doc/output-global.png "Sample global output")
+![example1](doc/output.png "Sample list output")
+![example2](doc/output-global.png "Sample global output")
+![example3](doc/output-portfolio.png "Sample portfolio output")
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/blob/master/LICENSE)
 
 ## Help ##
+Coinget has 3 available commands:
+
+| Command   | Description                           |
+| --------- | ------------------------------------- |
+| list      | list ranking and values of cryptos    |
+| stats     | list global crypto market information |
+| portfolio | list your own investments and profits |
+
     Program options:
     -c, --convert=SYM          display value in currency
-    -g, --global               display global crypto information
     -i, --coin-id=SYM          display specific crypto
     -l, --limit=NUM            display NUM cryptos
     -n, --no-color             disable color output
+    -p, --portfolio=file       use portfolio file
     -s, --start=NUM            start displaying from given rank
 
     Informational options:
@@ -27,15 +37,29 @@ Display the values and ranking of your favorite crypto currency in your terminal
         --usage                Give a short usage message
     -V, --version              Print program version
 
-The `-c` option only supports AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PKR, PLN, RUB, SEK, SGD, THB, TRY, TWD, ZAR.
-The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum` and can be used multiple times like:
+The `-c` option only supports AUD, BRL, CAD, CHF, CLP, CNY, CZK, DKK, EUR, GBP, HKD, HUF, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PKR, PLN, RUB, SEK, SGD, THB, TRY, TWD, USD, ZAR.
+The `-i` option should be the name of the crypto, for example `bitcoin` or `ethereum`.
 
-    $ coinget -i bitcoin -i ethereum
+### Portfolio ###
+The portfolio file must be specified after the `portfolio` command or using the `-p` option.
+The first line of this file must contain a currency (same as for `-c` option).
+The next lines must be space separated values containing the crypto id, the amount of coins and the investment in the given currency.
+So for example:
 
-or
+    EUR
+    bitcoin 0.001 100
+    ripple 20 15.70
 
-    $ coinget bitcoin ethereum ripple
+### Examples ###
 
+| Command                       | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| `coinget list -l 100 -c EUR`  | list top 100 coins with prices in euros                 |
+| `coinget list -l 0`           | list all coins on the market in USD                     |
+| `coinget list -s 1000`        | list all coins with rank higher than 1000               |
+| `coinget list bitcoin ripple` | list values of bitcoin and ripple                       |
+| `coinget stats -c AUD`        | list global market stats converted to AUD               |
+| `coinget portfolio coins`     | list your own investments and profits from file _coins_ |
 
 ## Bugs ##
 Report bugs or questions to <https://github.com/Olavhaasie/coinget/issues/new>.
