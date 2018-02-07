@@ -186,7 +186,8 @@ int main(int argc, char* argv[]) {
     args.symbols = NULL;
     args.specific = 0;
     args.global = 0;
-    args.portfolio = NULL;
+    args.portfolio = getenv("HOME");
+    strcat(args.portfolio, "/.coins");
     args.color_enabled = 1;
 
     if (argc < 2) {
