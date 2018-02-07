@@ -10,7 +10,7 @@ const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/is
 const char* argp_program_version = VERSION;
 
 static struct argp_option global_options[] = {
-        { 0, 0, 0, 0, "Global options:", 0 },
+        { 0, 0, 0, 0, "global options:", 0 },
         { "no-color", 'n', 0, 0, "disable color output", 0 },
         { 0 }
 };
@@ -33,9 +33,9 @@ static struct argp_option portfolio_options[] = {
         { 0 }
 };
 
-static char list_doc[] = "List ranking and values of cryptos";
-static char stats_doc[] = "List global crypto market information";
-static char portfolio_doc[] = "List your own investments and profits";
+static char list_doc[] = "list ranking and values of cryptos";
+static char stats_doc[] = "list global crypto market information";
+static char portfolio_doc[] = "list your own investments and profits";
 
 static int list_parse_opt(int key, char* arg, struct argp_state* state) {
     arguments* args = (arguments*) state->input;
@@ -172,10 +172,10 @@ static int global_parse_opt(int key, char* arg, struct argp_state* state) {
 
 static struct argp global_argp = { global_options, global_parse_opt, "COMMAND [OPTION...]",
     "display cryptocurrency values in terminal\v"
-    "commands:\n"
-    "    list        shows the ranking and values of all cryptos\n"
-    "    stats       shows global information of the crypto market\n"
-    "    portfolio   shows your own portfolio of investments\n",
+    " commands:\n"
+    "      list        shows the ranking and values of all cryptos\n"
+    "      stats       shows global information of the crypto market\n"
+    "      portfolio   shows your own portfolio of investments\n",
     0, 0, 0 };
 
 int main(int argc, char* argv[]) {
