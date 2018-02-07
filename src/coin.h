@@ -19,7 +19,7 @@ int display_result(const arguments* args);
 
 int display_global(const arguments* args);
 
-int display_portfolio(const char* filename);
+int display_portfolio(const arguments* args);
 
 #endif
 

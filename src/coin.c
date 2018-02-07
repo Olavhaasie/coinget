@@ -205,10 +205,11 @@ int display_global(const arguments* args) {
     return 0;
 }
 
-int display_portfolio(const char* filename) {
-    FILE* fp = fopen(filename, "r");
+int display_portfolio(const arguments* args) {
+    color_enabled = args->color_enabled;
+    FILE* fp = fopen(args->portfolio, "r");
     if (!fp) {
-        fprintf(stderr, "failed to open %s\n", filename);
+        fprintf(stderr, "failed to open %s\n", args->portfolio);
         return -1;
     }
 
