@@ -9,11 +9,13 @@
 
 Display the values and ranking of your favorite crypto currency in your terminal.💸
 
+[![license](https://img.shields.io/github/license/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/releases) 
+[![GitHub stars](https://img.shields.io/github/stars/Olavhaasie/coinget.svg?label=stars&style=flat-square)](https://github.com/Olavhaasie/coinget/star) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/tree/master/src)
+
+## Screenshots ##
 ![example1](doc/output.png "Sample list output")
 ![example2](doc/output-global.png "Sample global output")
 ![example3](doc/output-portfolio.png "Sample portfolio output")
-
-[![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/blob/master/LICENSE)
 
 ## Help ##
 Coinget has 3 available commands:
