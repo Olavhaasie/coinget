@@ -4,25 +4,25 @@
 coinget \- display values and ranking of your favorite cryptos in terminal
 
 .SH SYNOPSIS
-.B coinget
-[\fB\-gn?V\fR]
-[\fB\-c\fR \fISYM\fR]
-[\fB\-i\fR \fISYM\fR]
-[\fB\-l\fR \fINUM\fR]
-[\fB\-s\fR \fINUM\fR]
+.B coinget [\fB\-?V\fR] [\fB\-\-help\fR] [\fB\-\-usage\fR] [\fB\-\-version\fR]
+
+.B coinget [\fB\-n\fR]
+.B list [\fB\-c\fR \fISYM\fR] [\fB\-i\fR \fISYM\fR] [\fB\-l\fR \fINUM\fR] [\fB\-s\fR \fINUM\fR]
 [\fB\-\-convert\fR \fISYM\fR]
 [\fB\-\-coin-id\fR  \fISYM\fR]
-[\fB\-\-global\fR]
 [\fB\-\-limit\fR \fINUM\fR]
 [\fB\-\-start\fR \fINUM\fR]
-[\fB\-\-help\fR]
-[\fB\-\-usage\fR]
-[\fB\-\-version\fR]
 .IR [CRYPTO\-IDs]
+
+.B coinget [\fB\-n\fR]
+.B stats [\fB\-c\fR \fISYM\fR] [\fB\-\-convert\fR \fISYM\fR]
+
+.B coinget [\fB\-n\fR]
+.B portfolio [\fB\-p\fR \fIFILE\fR] [\fB\-\-portfolio\fR \fIFILE\fR] [\fIFILE\fR]
 
 .SH DESCRIPTION
 .B coinget
-Displays ranking, price and market change in 1 day and 1 week.
+displays ranking, price and market change in 1 day and 1 week.
 
 .SH OPTIONS
 .TP
@@ -38,23 +38,22 @@ This argument can be given multiple times to display multiple specific cryptos.
 Default is none.
 
 .TP
-.BR \-g ", " \-\-global
-Display global information about the cryptocurrency market such as total marketcap and active cryptos.
-This argument can be combined with the '--convert' option to display marketcap in another currency.
-
-.TP
 .BR \-l ", " \-\-limit =\fINUM\fR " [25]"
 limit amount of cryptos shown.
 Default is 25.
 
 .TP
+.BR \-n ", " \-\-no\-color
+Disable color output.
+
+.TP
 .BR \-s ", " \-\-start =\fINUM\fR " [0]"
-start displaying from given rank number.
+Start displaying from given rank number.
 Default is 0.
 
 .TP
-.BR \-n ", " \-\-no\-color
-Disable color output
+.BR \-p ", " \-\-portfolio =\fIFILE\fR " []"
+Use specified file as a portfolio.
 
 .TP
 .BR \-? ", " \-\-help
@@ -68,9 +67,28 @@ Give a short usage message.
 .BR \-V ", " \-\-version
 Print program version
 
+.SH FILES
+.TP
+.BR ~/.coins
+default location for the portfolio file if not specified.
+The first line of this file must be a currency. The next lines then describe the coin name, amount and investment in given currency separated by spaces.
+A portfolio file could like this:
+
+.EX
+EUR
+bitcoin 1.0001 100
+ripple 20.2 20
+litecoin 20 20
+garlicoin 0.1 0.01
+.EE
+
 .SH BUGS
-report bugs to https://github.com/Olavhaasie/coinget/issues
+report bugs to
+.UR https://github.com/Olavhaasie/coinget/issues
+.UE
 
 .SH AUTHOR
-Olavhaasie (https://github.com/Olavhaasie)
+Olavhaasie
+.UR https://github.com/Olavhaasie
+.UE
 
