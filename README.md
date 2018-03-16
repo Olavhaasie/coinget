@@ -10,7 +10,10 @@
 Display the values and ranking of your favorite crypto currency in your terminal.💸
 
 [![license](https://img.shields.io/github/license/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/releases) 
+
 [![GitHub stars](https://img.shields.io/github/stars/Olavhaasie/coinget.svg?label=stars&style=flat-square)](https://github.com/Olavhaasie/coinget/star) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/tree/master/src)
+
+[![AUR](https://img.shields.io/aur/version/coinget.svg)](https://aur.archlinux.org/packages/coinget/)
 
 ## Screenshots ##
 ![example1](doc/output.png "Sample list output")
@@ -81,6 +84,8 @@ Also the cryptocurrency information originates from <https://coinmarketcap.com>.
 The code was developed on Linux, but also works on macOS.
 
 ## Install ##
+
+### Manual ###
 First clone the repository
 
     $ git clone --recursive https://github.com/Olavhaasie/coinget
@@ -104,6 +109,9 @@ Homebrew users on macOS can simply tap the [repository](https://github.com/marti
 
     $ brew tap martijncomans/homebrew-coinget
     $ brew install coinget
+
+### Arch Linux (AUR) ###
+You can download the package from <https://aur.archlinux.org/packages/coinget>.
 
 ## License ##
 This software is distributed under MIT license 📝
