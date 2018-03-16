@@ -13,7 +13,7 @@ Display the values and ranking of your favorite crypto currency in your terminal
 
 [![GitHub stars](https://img.shields.io/github/stars/Olavhaasie/coinget.svg?label=stars&style=flat-square)](https://github.com/Olavhaasie/coinget/star) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Olavhaasie/coinget.svg?style=flat-square)](https://github.com/Olavhaasie/coinget/tree/master/src)
 
-[![AUR](https://img.shields.io/aur/version/coinget.svg)](https://aur.archlinux.org/packages/coinget/)
+[![AUR](https://img.shields.io/aur/version/coinget.svg?style=flat-square)](https://aur.archlinux.org/packages/coinget)
 
 ## Screenshots ##
 ![example1](doc/output.png "Sample list output")
