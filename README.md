@@ -93,16 +93,12 @@ First clone the repository
 The option `recursive` will also clone the `jsmn` dependency. Then
 
     $ cd coinget
-    $ make
-    $ sudo make install
+    $ cmake -S . -B build
+    $ cmake --install build
 
 And now you can run with
 
     $ coinget
-
-If you want to remove the program you can do
-
-    $ sudo make uninstall
 
 ### macOS (Homebrew) ###
 Homebrew users on macOS can simply tap the [repository](https://github.com/martijncomans/homebrew-coinget) made by Martijn Comans:

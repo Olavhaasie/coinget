@@ -1,4 +1,3 @@
-[submodule "jsmn"]
-	path = jsmn
+[submodule "extern/jsmn"]
+	path = extern/jsmn
 	url = https://github.com/zserge/jsmn
-	ignore = dirty

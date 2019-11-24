@@ -1,13 +1,14 @@
 #include <argp.h>
 
-#include "util.h"
 #include "coin.h"
+#include "util.h"
+#include "version.h"
 
 #define SUBCOMMANDS_SIZE 3
 #define SYM_STEP 10
 
 const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
-const char* argp_program_version = VERSION;
+const char* argp_program_version = COINGET_VERSION;
 
 static struct argp_option global_options[] = {
         { 0, 0, 0, 0, "global options:", 0 },

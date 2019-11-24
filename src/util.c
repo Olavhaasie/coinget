@@ -1,8 +1,11 @@
-#include "util.h"
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+
+#include "jsmn.h"
+
+#include "util.h"
 
 #define TKN_SIZE 1024
 #define CURR_SIZE 32

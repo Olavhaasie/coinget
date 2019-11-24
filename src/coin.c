@@ -1,7 +1,8 @@
-#include "coin.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
+
+#include "coin.h"
 #include "util.h"
 
 #define COLOR_RED     "\x1b[31m"

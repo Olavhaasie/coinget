@@ -1,7 +1,9 @@
-#include <stdlib.h>
-#include "jsmn.h"
 #ifndef UTIL_H
 #define UTIL_H
+#include <stdlib.h>
+
+#define JSMN_HEADER
+#include "jsmn.h"
 
 #define URL_SIZE 256 // max url character size
 
