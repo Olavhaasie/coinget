@@ -15,10 +15,9 @@ static CURL* curl;
 static int initialized = 0;
 
 static const char* currencies[] = {
-    "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK",
-    "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY",
-    "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN",
-    "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "USD", "ZAR" };
+    "AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK", "EUR", "GBP", "HKD",
+    "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK", "NZD", "PHP",
+    "PKR", "PLN", "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "USD", "ZAR"};
 
 static void cleanup() {
     curl_global_cleanup();
@@ -26,9 +25,10 @@ static void cleanup() {
     initialized = 0;
 }
 
-static size_t get_callback(void* contents, size_t size, size_t nmemb, void* userdata) {
+static size_t get_callback(void* contents, size_t size, size_t nmemb,
+                           void* userdata) {
     const size_t real_size = size * nmemb;
-    result_t* res = (result_t*) userdata;
+    result_t* res = (result_t*)userdata;
     res->data = realloc(res->data, res->size + real_size + 1);
     if (!res->data) {
         fprintf(stderr, "out of memory!\n");
@@ -68,9 +68,8 @@ int is_available(char* curr) {
         curr[1] = toupper(curr[1]);
         curr[2] = toupper(curr[2]);
         for (size_t i = 0; i < CURR_SIZE; i++) {
-            if (curr[0] == currencies[i][0]
-                    && curr[1] == currencies[i][1]
-                    && curr[2] == currencies[i][2]) {
+            if (curr[0] == currencies[i][0] && curr[1] == currencies[i][1] &&
+                curr[2] == currencies[i][2]) {
                 return 1;
             }
         }
@@ -78,7 +77,7 @@ int is_available(char* curr) {
     return 0;
 }
 
-int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
+int request(char (*url)[URL_SIZE], size_t urlc, result_t* res) {
     if (!initialized && init_curl()) {
         return -1;
     }
@@ -93,7 +92,7 @@ int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
 
         CURLcode err = curl_easy_perform(curl);
 
-        if(err == CURLE_OK) {
+        if (err == CURLE_OK) {
             long response_code;
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
             if (response_code == NOT_FOUND) {
@@ -118,7 +117,8 @@ int parse_json(const result_t* res, jsmntok_t** tokens) {
     *tokens = malloc(sizeof(jsmntok_t) * TKN_SIZE);
     size_t count = 1;
     int size;
-    while ((size = jsmn_parse(&parser, res->data, res->size, *tokens, count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
+    while ((size = jsmn_parse(&parser, res->data, res->size, *tokens,
+                              count * TKN_SIZE)) == JSMN_ERROR_NOMEM) {
         *tokens = realloc(*tokens, ++count * sizeof(jsmntok_t) * TKN_SIZE);
     }
     if (size < 0) {
@@ -129,4 +129,3 @@ int parse_json(const result_t* res, jsmntok_t** tokens) {
 
     return size;
 }
-

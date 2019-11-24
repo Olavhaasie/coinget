@@ -13,7 +13,8 @@ typedef struct {
 } result_t;
 
 /**
- * init the curl library. Will be automatically called by request if unitialized.
+ * init the curl library. Will be automatically called by request if
+ * unitialized.
  *
  * @return 0 when successful, non-zero otherwise
  */
@@ -37,7 +38,7 @@ int is_available(char* currency);
  * @param res  pointer to unallocated result struct.
  * @return 0 when successful, non-zero otherwise
  */
-int request(char (* url)[URL_SIZE], size_t urlc, result_t* res);
+int request(char (*url)[URL_SIZE], size_t urlc, result_t* res);
 
 /**
  * Parse the json result from a result struct into tokens.
@@ -50,4 +51,3 @@ int request(char (* url)[URL_SIZE], size_t urlc, result_t* res);
 int parse_json(const result_t* res, jsmntok_t** tokens);
 
 #endif
-

@@ -23,4 +23,3 @@ int display_global(const arguments* args);
 int display_portfolio(const arguments* args);
 
 #endif
-
