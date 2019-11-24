@@ -5,6 +5,7 @@
 #include "version.h"
 
 #define SUBCOMMANDS_SIZE 3
+#define DEFAULT_LIMIT 25
 #define SYM_STEP 10
 
 const char* argp_program_bug_address = "https://github.com/Olavhaasie/coinget/issues";
@@ -40,19 +41,19 @@ static char portfolio_doc[] = "list your own investments and profits";
 
 static int list_parse_opt(int key, char* arg, struct argp_state* state) {
     arguments* args = (arguments*) state->input;
-    long tolong = 0;
+    size_t tolong = 0;
     switch (key) {
         case 's':
-            tolong = atol(arg);
-            if (tolong < 0) {
+            tolong = strtoul(arg, NULL, 0);
+            if (tolong == 0 || tolong == ULONG_MAX) {
                 argp_error(state, "argument must be positive integer");
             } else {
                 args->start = tolong - 1;
             }
             break;
         case 'l':
-            tolong = atol(arg);
-            if (tolong < 0) {
+            tolong = strtoul(arg, NULL, 0);
+            if (tolong == 0 || tolong == ULONG_MAX) {
                 argp_error(state, "argument must be positive integer");
             } else {
                 args->limit = tolong;
@@ -91,7 +92,7 @@ static int stats_parse_opt(int key, char* arg, struct argp_state* state) {
             }
             break;
         default:
-            ARGP_ERR_UNKNOWN;
+            return ARGP_ERR_UNKNOWN;
     }
     return 0;
 }
@@ -104,7 +105,7 @@ static int portfolio_parse_opt(int key, char* arg, struct argp_state* state) {
             args->portfolio = arg;
             break;
         default:
-            ARGP_ERR_UNKNOWN;
+            return ARGP_ERR_UNKNOWN;
     }
     return 0;
 }
@@ -144,7 +145,6 @@ void parse_subcommand(struct argp_state* state, const char* name, struct argp* a
     argv[0] = arg0;
 
     state->next += argc - 1;
-    return;
 }
 
 static int global_parse_opt(int key, char* arg, struct argp_state* state) {
@@ -182,7 +182,7 @@ static struct argp global_argp = { global_options, global_parse_opt, "COMMAND [O
 int main(int argc, char* argv[]) {
     arguments args;
     args.start = 0;
-    args.limit = 25;
+    args.limit = DEFAULT_LIMIT;
     args.convert = NULL;
     args.symbols = NULL;
     args.specific = 0;

@@ -1,7 +1,7 @@
+#include <ctype.h>
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "jsmn.h"
 
@@ -9,6 +9,7 @@
 
 #define TKN_SIZE 1024
 #define CURR_SIZE 32
+#define NOT_FOUND 404
 
 static CURL* curl;
 static int initialized = 0;
@@ -95,7 +96,7 @@ int request(char (* url)[URL_SIZE], size_t urlc, result_t* res) {
         if(err == CURLE_OK) {
             long response_code;
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-            if (response_code == 404) {
+            if (response_code == NOT_FOUND) {
                 free(res->data);
                 res->size = 0;
                 fprintf(stderr, "id not found\n");

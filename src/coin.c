@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "coin.h"
@@ -47,7 +47,9 @@ static void cprintf(const char* color, const char* format, ...) {
 }
 
 static void print_header(const column_t columns[], size_t size) {
-    if (color_enabled) printf(COLOR_BYELLOW);
+    if (color_enabled) {
+        printf(COLOR_BYELLOW);
+    }
     for (size_t i = 0; i < size; i++) {
         const char* format = columns[i].right_align ? "%*s " : "%-*s ";
         printf(format, columns[i].padding, columns[i].header);
@@ -64,7 +66,9 @@ static void print_header(const column_t columns[], size_t size) {
             printf(CROSS_SEP VER_SEP);
         }
     }
-    if (color_enabled) printf(COLOR_RESET);
+    if (color_enabled) {
+        printf(COLOR_RESET);
+    }
     printf("\n");
 }
 
@@ -208,7 +212,7 @@ int display_global(const arguments* args) {
 
 int display_portfolio(const arguments* args) {
     color_enabled = args->color_enabled;
-    FILE* fp = fopen(args->portfolio, "r");
+    FILE* fp = fopen(args->portfolio, "re");
     if (!fp) {
         fprintf(stderr, "failed to open %s\n", args->portfolio);
         return -1;
@@ -223,8 +227,13 @@ int display_portfolio(const arguments* args) {
         { "PROFIT", 0, 10, 0, 1, 0 },
     };
 
-    char name[64], convert[4];
-    double amount, invest, total_invest = 0, total_worth = 0, total_profit = 0;
+    char name[64];
+    char convert[4];
+    double amount;
+    double invest;
+    double total_invest = 0;
+    double total_worth = 0;
+    double total_profit = 0;
     if (fscanf(fp, "%3s", convert) != 1) {
         fprintf(stderr, "first line in portfolio should be convert currency\n");
         return -1;

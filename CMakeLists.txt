@@ -14,6 +14,18 @@ configure_file (
     @ONLY
 )
 
+if(CMAKE_VERSION VERSION_GREATER 3.6)
+    find_program(
+        CLANG_TIDY_EXE
+        NAMES "clang-tidy"
+        DOC "Path to clang-tidy executable"
+    )
+
+    if(CLANG_TIDY_EXE)
+        set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}" "--fix")
+    endif()
+endif()
+
 add_executable(coinget src/coin.c src/main.c src/util.c)
 target_include_directories(coinget PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src extern/jsmn)
 target_link_libraries(coinget PRIVATE curl)
@@ -23,3 +35,4 @@ set_target_properties(coinget PROPERTIES C_STANDARD 99)
 install(TARGETS coinget RUNTIME DESTINATION bin)
 
 install(FILES doc/coinget.1 TYPE MAN)
+
