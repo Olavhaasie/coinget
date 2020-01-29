@@ -94,6 +94,15 @@ The option `recursive` will also clone the `jsmn` dependency. Then
 
     $ cd coinget
     $ cmake -S . -B build
+    $ make -C build
+
+The `coinget` executable will be generated inside the `build/` directory and
+can be run with
+
+    $ ./build/coinget
+
+`coinget` can also be installed with `cmake`:
+
     $ cmake --install build
 
 And now you can run with
